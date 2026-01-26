@@ -1,14 +1,16 @@
-import type { EditorState } from './EditorState.ts'
+export const NodeCommandTypes = {
+  Add: 'add-node'
+  // Remove: 'remove-node',
+  // Update: 'update-node'
+} as const
 
-type AddCommand = 'add-node'
-type RemoveCommand = 'remove-node'
-type UpdateCommand = 'update-node'
+export const OrderCommandTypes = { Reorder: 'reorder' } as const
 
-type NodeCommandType = AddCommand | RemoveCommand | UpdateCommand
+export type CommandType =
+  | (typeof NodeCommandTypes)[keyof typeof NodeCommandTypes]
+  | (typeof OrderCommandTypes)[keyof typeof OrderCommandTypes]
 
-export interface Command {
-  type: NodeCommandType
-  execute(state: EditorState): EditorState
-  undo(state: EditorState): EditorState
-  redo(state: EditorState): EditorState
+export type Command = {
+  type: CommandType
+  payload: any
 }
