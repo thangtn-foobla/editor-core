@@ -3,8 +3,8 @@ import type {
   Subscriber
 } from '../interfaces/domain/Engine.ts'
 import type { Command } from '../interfaces/domain/Command.ts'
-import historyEngine from './history.ts'
-import { hisotryOps } from './ops/historyOps.ts'
+import { historyEngine } from './historyEngine.ts'
+import { historyOps } from './ops/historyOps.ts'
 
 export const createEditorEngine: CreateEditorEngine = options => {
   const { initialState, intentMap } = options
@@ -27,7 +27,7 @@ export const createEditorEngine: CreateEditorEngine = options => {
     const changed = next !== state
 
     if (changed) {
-      next.history = hisotryOps.record(state.history, command)
+      next.history = historyOps.record(state.history, command)
       notify()
     }
   }

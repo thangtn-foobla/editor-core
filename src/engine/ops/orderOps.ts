@@ -1,4 +1,7 @@
 import type { EditorState } from '../../interfaces/domain/EditorState.ts'
+import type { Node } from '../../interfaces/domain/Node.ts'
+
+type NodeId = Node['id']
 
 export interface OrderOps {
   insertNode(state: EditorState, nodeId: NodeId, index?: number): EditorState

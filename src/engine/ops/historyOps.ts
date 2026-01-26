@@ -5,7 +5,7 @@ export interface HistoryOps {
   record(history: HistoryState, command: Command): HistoryState
 }
 
-export const hisotryOps: HistoryOps = {
+export const historyOps: HistoryOps = {
   record(currentHistory: HistoryState, command: Command) {
     const { past } = currentHistory
     return {

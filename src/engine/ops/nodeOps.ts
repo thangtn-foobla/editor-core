@@ -1,0 +1,65 @@
+import type { EditorState } from '../../interfaces/domain/EditorState.ts'
+import type { Node } from '../../interfaces/domain/Node.ts'
+
+type NodeId = Node['id']
+
+export interface NodeOps {
+  addNode(state: EditorState, node: Node): EditorState
+
+  removeNode(state: EditorState, nodeId: NodeId): EditorState
+
+  updateNode(
+    state: EditorState,
+    nodeId: NodeId,
+    updates: Partial<Node>
+  ): EditorState
+}
+
+export const nodeOps: NodeOps = {
+  addNode(state: EditorState, node: Node): EditorState {
+    if (state.nodes.has(node.id)) {
+      throw new Error(`Node with id ${node.id} already exists`)
+    }
+
+    const nodes = new Map(state.nodes)
+    nodes.set(node.id, node)
+
+    return {
+      ...state,
+      nodes
+    }
+  },
+
+  removeNode(state: EditorState, nodeId: NodeId): EditorState {
+    if (!state.nodes.has(nodeId)) {
+      throw new Error(`Node with id ${nodeId} does not exist`)
+    }
+
+    const nodes = new Map(state.nodes)
+    nodes.delete(nodeId)
+    return {
+      ...state,
+      nodes
+    }
+  },
+
+  updateNode(
+    state: EditorState,
+    nodeId: NodeId,
+    updates: Partial<Node>
+  ): EditorState {
+    const existingNode = state.nodes.get(nodeId)
+    if (!existingNode) {
+      throw new Error(`Node with id ${nodeId} does not exist`)
+    }
+
+    const updatedNode = { ...existingNode, ...updates }
+    const nodes = new Map(state.nodes)
+    nodes.set(nodeId, updatedNode)
+
+    return {
+      ...state,
+      nodes
+    }
+  }
+}
