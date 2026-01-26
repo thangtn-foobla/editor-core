@@ -1,11 +1,6 @@
 import type { EditorState } from './EditorState.ts'
 import type { Command } from './Command.ts'
 
-export type Intent<TPayload> = (
-  state: EditorState,
-  payload: TPayload
-) => EditorState
-
 export type IntentHandler<T extends Command['type']> = (
   state: EditorState,
   command: Extract<Command, { type: T }>

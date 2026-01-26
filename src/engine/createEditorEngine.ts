@@ -1,5 +1,6 @@
 import type {
   CreateEditorEngine,
+  IntentHandler,
   Subscriber
 } from '../interfaces/domain/Engine.ts'
 import type { Command } from '../interfaces/domain/Command.ts'
@@ -19,7 +20,7 @@ export const createEditorEngine: CreateEditorEngine = options => {
     }
   }
   function dispatch(command: Command) {
-    const intent = intentMap[command.type]
+    const intent = intentMap[command.type] as IntentHandler<typeof command.type>
     if (!intent) {
       throw new Error(`No intent found for command type ${command.type}`)
     }

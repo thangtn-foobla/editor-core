@@ -1,4 +1,3 @@
-import type { Intent } from '../../interfaces/domain/Engine.ts'
 import type { Node } from '../../interfaces/domain/Node.ts'
 import type { EditorState } from '../../interfaces/domain/EditorState.ts'
 
@@ -9,7 +8,7 @@ export interface SelectionOps {
 
   deselectNodes(state: EditorState, nodeIds: NodeId[]): EditorState
 
-  clearSelection(state: EditorState): EditorState
+  // clearSelection(state: EditorState): EditorState
 }
 
 export const selectionOps: SelectionOps = {
@@ -18,7 +17,16 @@ export const selectionOps: SelectionOps = {
       ...state,
       selection: {
         ...state.selection,
-        nodes: nodeIds
+        nodeIds: nodeIds
+      }
+    }
+  },
+  deselectNodes(state: EditorState, nodeIds: NodeId[]): EditorState {
+    return {
+      ...state,
+      selection: {
+        ...state.selection,
+        nodeIds: nodeIds
       }
     }
   }

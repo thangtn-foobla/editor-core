@@ -1,16 +1,59 @@
-export const NodeCommandTypes = {
-  Add: 'add-node'
-  // Remove: 'remove-node',
-  // Update: 'update-node'
-} as const
+import type { Node } from './Node.ts'
 
-export const OrderCommandTypes = { Reorder: 'reorder' } as const
 
-export type CommandType =
-  | (typeof NodeCommandTypes)[keyof typeof NodeCommandTypes]
-  | (typeof OrderCommandTypes)[keyof typeof OrderCommandTypes]
-
-export type Command = {
-  type: CommandType
-  payload: any
+interface BaseCommand {
+  type: string;
+  meta?: CommandMeta;
 }
+
+export interface CommandMeta {
+  recordHistory?: boolean;
+  groupId?: string;
+  source: 'ui' | 'remote' | 'system'
+
+}
+
+export interface AddNodeCommand extends BaseCommand {
+  type: 'ADD_NODE';
+  payload: {
+    node: Node;
+    index?: number;
+    select?: boolean
+  };
+}
+
+export interface RemoveNodeCommand extends BaseCommand {
+  type: 'REMOVE_NODE';
+  payload: {
+    nodeId: Node['id'];
+  };
+}
+
+export interface UpdateNodeCommand extends BaseCommand {
+  type: 'UPDATE_NODE';
+  payload: {
+    nodeId: Node['id'];
+    updates: Partial<Node>;
+  };
+}
+
+export interface ReorderCommand extends BaseCommand {
+  type: 'REORDER';
+  payload: {
+    nodeId: Node['id'];
+    toIndex: number;
+  };
+}
+
+export interface SelectionCommand extends BaseCommand {
+  type: 'SELECT_NODE';
+  payload: {
+    nodeId: Node['id'];
+  };
+}
+
+
+export type NodeCommand = AddNodeCommand | RemoveNodeCommand | UpdateNodeCommand
+export type OrderCommand = ReorderCommand
+
+export type Command = NodeCommand | OrderCommand | SelectionCommand

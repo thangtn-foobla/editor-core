@@ -18,7 +18,7 @@ export interface NodeOps {
 export const nodeOps: NodeOps = {
   addNode(state: EditorState, node: Node): EditorState {
     if (state.nodes.has(node.id)) {
-      throw new Error(`Node with id ${node.id} already exists`)
+      return state
     }
 
     const nodes = new Map(state.nodes)

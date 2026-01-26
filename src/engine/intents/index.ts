@@ -1,19 +1,13 @@
-import { addNodeIntent } from './nodeIntents'
-import {
-  NodeCommandTypes,
-  OrderCommandTypes
-} from '../../interfaces/domain/Command.ts'
 import type { IntentMap } from '../../interfaces/domain/Engine.ts'
 
-export const intentMap: IntentMap = {
-  [NodeCommandTypes.Add]: addNodeIntent
-  // [NodeCommandTypes.Remove]: () => {
-  //   throw new Error('Not implemented')
-  // },
-  // [NodeCommandTypes.Update]: () => {
-  //   throw new Error('Not implemented')
-  // },
-  // [OrderCommandTypes.Reorder]: () => {
-  //   throw new Error('Not implemented')
-  // }
-}
+import { addNodeIntent, removeNodeIntent, updateNodeIntent } from './nodeIntents'
+import { reorderNodeIntent } from './orderIntents.ts'
+import { selectNodeIntent } from './selectionIntents.ts'
+
+export const intentMap = {
+  ADD_NODE: addNodeIntent,
+  REMOVE_NODE: removeNodeIntent,
+  UPDATE_NODE: updateNodeIntent,
+  REORDER: reorderNodeIntent,
+  SELECT_NODE: selectNodeIntent,
+} satisfies IntentMap
