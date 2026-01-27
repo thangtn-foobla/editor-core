@@ -1,4 +1,4 @@
-import type { IntentMap } from '../interfaces/domain/Engine.ts'
+import type { IntentHandler, IntentMap } from '../interfaces/domain/Engine.ts'
 import type { EditorState } from '../interfaces/domain/EditorState.ts'
 import type { Command } from '../interfaces/domain/Command.ts'
 
@@ -8,7 +8,7 @@ function replay(
   intentMap: IntentMap
 ): EditorState {
   return commands.reduce((state, command) => {
-    const intent = intentMap[command.type]
+    const intent = intentMap[command.type] as IntentHandler<typeof command.type>
     return intent ? intent(state, command) : state
   }, initial)
 }

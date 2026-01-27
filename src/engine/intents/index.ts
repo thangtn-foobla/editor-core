@@ -11,3 +11,5 @@ export const intentMap = {
   REORDER: reorderNodeIntent,
   SELECT_NODE: selectNodeIntent,
 } satisfies IntentMap
+
+export { addNodeIntent, removeNodeIntent, updateNodeIntent, reorderNodeIntent, selectNodeIntent }
