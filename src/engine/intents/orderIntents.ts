@@ -1,6 +1,6 @@
 import { orderOps } from '../ops/orderOps'
 import { selectionOps } from '../ops/selectionOps'
-import type { IntentHandler } from '../../interfaces/domain/Engine.ts'
+import type { IntentHandler } from '../../interfaces/domain/Engine'
 
 export const reorderNodeIntent: IntentHandler<'REORDER'> = (state, cmd) => {
   const { nodeId, toIndex } = cmd.payload

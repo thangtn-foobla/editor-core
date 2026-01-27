@@ -1,4 +1,4 @@
-import type { Node } from './Node.ts'
+import type { Node } from './Node'
 
 
 interface BaseCommand {

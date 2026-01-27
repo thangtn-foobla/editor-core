@@ -1,7 +1,7 @@
 import { nodeOps } from '../ops/nodeOps'
 import { orderOps } from '../ops/orderOps'
 import { selectionOps } from '../ops/selectionOps'
-import type { IntentHandler } from '../../interfaces/domain/Engine.ts'
+import type { IntentHandler } from '../../interfaces/domain/Engine'
 
 export const addNodeIntent: IntentHandler<'ADD_NODE'> = (state, cmd) => {
   const { node, index, select } = cmd.payload

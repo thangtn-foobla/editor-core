@@ -2,10 +2,10 @@ import type {
   CreateEditorEngine,
   IntentHandler,
   Subscriber
-} from '../interfaces/domain/Engine.ts'
-import type { Command } from '../interfaces/domain/Command.ts'
-import { historyEngine } from './historyEngine.ts'
-import { historyOps } from './ops/historyOps.ts'
+} from '../interfaces/domain/Engine'
+import type { Command } from '../interfaces/domain/Command'
+import { historyEngine } from './historyEngine'
+import { historyOps } from './ops/historyOps'
 
 export const createEditorEngine: CreateEditorEngine = options => {
   const { initialState, intentMap } = options

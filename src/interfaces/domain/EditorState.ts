@@ -1,6 +1,6 @@
 import type { Node } from './Node'
-import type { HistoryState } from './History.ts'
-import type { Selection } from './Selection.ts'
+import type { HistoryState } from './History'
+import type { Selection } from './Selection'
 
 type Order = Node['id'][]
 

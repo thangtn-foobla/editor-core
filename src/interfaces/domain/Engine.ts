@@ -1,5 +1,5 @@
-import type { EditorState } from './EditorState.ts'
-import type { Command } from './Command.ts'
+import type { EditorState } from './EditorState'
+import type { Command } from './Command'
 
 export type IntentHandler<T extends Command['type']> = (
   state: EditorState,

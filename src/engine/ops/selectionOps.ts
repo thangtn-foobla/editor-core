@@ -1,5 +1,5 @@
-import type { Node } from '../../interfaces/domain/Node.ts'
-import type { EditorState } from '../../interfaces/domain/EditorState.ts'
+import type { Node } from '../../interfaces/domain/Node'
+import type { EditorState } from '../../interfaces/domain/EditorState'
 
 
 type NodeId = Node['id']

@@ -1,6 +1,6 @@
-import type { IntentHandler, IntentMap } from '../interfaces/domain/Engine.ts'
-import type { EditorState } from '../interfaces/domain/EditorState.ts'
-import type { Command } from '../interfaces/domain/Command.ts'
+import type { IntentHandler, IntentMap } from '../interfaces/domain/Engine'
+import type { EditorState } from '../interfaces/domain/EditorState'
+import type { Command } from '../interfaces/domain/Command'
 
 function replay(
   initial: EditorState,

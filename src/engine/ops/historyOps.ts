@@ -1,5 +1,5 @@
-import type { Command } from '../../interfaces/domain/Command.ts'
-import type { HistoryState } from '../../interfaces/domain/History.ts'
+import type { Command } from '../../interfaces/domain/Command'
+import type { HistoryState } from '../../interfaces/domain/History'
 
 export interface HistoryOps {
   record(history: HistoryState, command: Command): HistoryState

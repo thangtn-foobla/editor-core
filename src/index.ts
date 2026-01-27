@@ -1,7 +1,7 @@
-export { createEditorEngine } from './engine/createEditorEngine.ts'
+export { createEditorEngine } from './engine/createEditorEngine'
 
-export type { EditorEngine } from './interfaces/domain/Engine.ts'
-export type { EditorState } from './interfaces/domain/EditorState.ts'
+export type { EditorEngine } from './interfaces/domain/Engine'
+export type { EditorState } from './interfaces/domain/EditorState'
 
 export * from './engine/ops'
 export * from './engine/intents'

@@ -1,3 +1,3 @@
-export * from './nodeOps.ts'
-export * from './orderOps.ts'
-export * from './selectionOps.ts'
+export * from './nodeOps'
+export * from './orderOps'
+export * from './selectionOps'

@@ -1,8 +1,8 @@
-import type { IntentMap } from '../../interfaces/domain/Engine.ts'
+import type { IntentMap } from '../../interfaces/domain/Engine'
 
 import { addNodeIntent, removeNodeIntent, updateNodeIntent } from './nodeIntents'
-import { reorderNodeIntent } from './orderIntents.ts'
-import { selectNodeIntent } from './selectionIntents.ts'
+import { reorderNodeIntent } from './orderIntents'
+import { selectNodeIntent } from './selectionIntents'
 
 export const intentMap = {
   ADD_NODE: addNodeIntent,
