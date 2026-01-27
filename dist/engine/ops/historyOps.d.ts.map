@@ -1,0 +1,1 @@
+{"version":3,"file":"historyOps.d.ts","sourceRoot":"","sources":["../../../src/engine/ops/historyOps.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,OAAO,EAAE,MAAM,iCAAiC,CAAA;AAC9D,OAAO,KAAK,EAAE,YAAY,EAAE,MAAM,iCAAiC,CAAA;AAEnE,MAAM,WAAW,UAAU;IACzB,MAAM,CAAC,OAAO,EAAE,YAAY,EAAE,OAAO,EAAE,OAAO,GAAG,YAAY,CAAA;CAC9D;AAED,eAAO,MAAM,UAAU,EAAE,UAQxB,CAAA"}

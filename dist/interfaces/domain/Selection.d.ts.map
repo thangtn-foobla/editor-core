@@ -1,0 +1,1 @@
+{"version":3,"file":"Selection.d.ts","sourceRoot":"","sources":["../../../src/interfaces/domain/Selection.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,IAAI,EAAE,MAAM,QAAQ,CAAA;AAClC,KAAK,MAAM,GAAG,IAAI,CAAC,IAAI,CAAC,CAAA;AACxB,MAAM,WAAW,SAAS;IACxB,OAAO,EAAE,MAAM,EAAE,CAAA;IACjB,OAAO,CAAC,EAAE,MAAM,CAAA;CACjB"}
