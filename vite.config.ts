@@ -11,5 +11,9 @@ export default defineConfig({
     rollupOptions: {
       external: [],
     }
+  },
+  test: {
+    globals: true,
+    environment: 'node',
   }
 })

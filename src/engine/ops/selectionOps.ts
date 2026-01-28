@@ -21,12 +21,16 @@ export const selectionOps: SelectionOps = {
       }
     }
   },
-  deselectNodes(state: EditorState, nodeIds: NodeId[]): EditorState {
+  deselectNodes(state: EditorState, nodeIdsToRemove: NodeId[]): EditorState {
+    const toRemove = new Set(nodeIdsToRemove)
+    const nodeIds = (state.selection.nodeIds ?? []).filter(
+      id => !toRemove.has(id)
+    )
     return {
       ...state,
       selection: {
         ...state.selection,
-        nodeIds: nodeIds
+        nodeIds
       }
     }
   }
