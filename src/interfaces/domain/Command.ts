@@ -45,15 +45,20 @@ export interface ReorderCommand extends BaseCommand {
   };
 }
 
-export interface SelectionCommand extends BaseCommand {
+export interface SelectNodeCommand extends BaseCommand {
   type: 'SELECT_NODE';
   payload: {
     nodeId: Node['id'];
   };
 }
 
+export interface RemoveSelectedNodesCommand extends BaseCommand {
+  type: 'REMOVE_SELECTED_NODES';
+}
+
 
 export type NodeCommand = AddNodeCommand | RemoveNodeCommand | UpdateNodeCommand
 export type OrderCommand = ReorderCommand
+export type SelectionCommand = SelectNodeCommand | RemoveSelectedNodesCommand
 
 export type Command = NodeCommand | OrderCommand | SelectionCommand

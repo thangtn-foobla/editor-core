@@ -114,6 +114,66 @@ describe('nodeOps', () => {
     })
   })
 
+  describe('removeNodes', () => {
+    it('should remove multiple existing nodes', () => {
+      const state = createInitialState()
+      const node1 = createNode('node-1')
+      const node2 = createNode('node-2')
+      const node3 = createNode('node-3')
+      let result = nodeOps.addNode(state, node1)
+      result = nodeOps.addNode(result, node2)
+      result = nodeOps.addNode(result, node3)
+
+      const after = nodeOps.removeNodes(result, ['node-1', 'node-3'])
+
+      expect(after.nodes.has('node-1')).toBe(false)
+      expect(after.nodes.has('node-3')).toBe(false)
+      expect(after.nodes.has('node-2')).toBe(true)
+      expect(after.nodes.size).toBe(1)
+    })
+
+    it('should ignore nodeIds that do not exist', () => {
+      const state = createInitialState()
+      const node1 = createNode('node-1')
+      const node2 = createNode('node-2')
+      let result = nodeOps.addNode(state, node1)
+      result = nodeOps.addNode(result, node2)
+
+      const after = nodeOps.removeNodes(result, ['node-1', 'non-existent'])
+
+      expect(after.nodes.has('node-1')).toBe(false)
+      expect(after.nodes.has('node-2')).toBe(true)
+      expect(after.nodes.size).toBe(1)
+    })
+
+    it('should return same nodes when given empty array', () => {
+      const state = createInitialState()
+      const node1 = createNode('node-1')
+      const node2 = createNode('node-2')
+      const result = nodeOps.addNode(nodeOps.addNode(state, node1), node2)
+
+      const after = nodeOps.removeNodes(result, [])
+
+      expect(after.nodes).not.toBe(result.nodes) // new Map
+      expect(after.nodes.size).toBe(2)
+      expect(after.nodes.has('node-1')).toBe(true)
+      expect(after.nodes.has('node-2')).toBe(true)
+    })
+
+    it('should not modify the original state', () => {
+      const state = createInitialState()
+      const node1 = createNode('node-1')
+      const node2 = createNode('node-2')
+      const withNodes = nodeOps.addNode(nodeOps.addNode(state, node1), node2)
+
+      nodeOps.removeNodes(withNodes, ['node-1'])
+
+      expect(withNodes.nodes.size).toBe(2)
+      expect(withNodes.nodes.has('node-1')).toBe(true)
+      expect(withNodes.nodes.has('node-2')).toBe(true)
+    })
+  })
+
   describe('updateNode', () => {
     it('should update node properties', () => {
       const state = createInitialState()

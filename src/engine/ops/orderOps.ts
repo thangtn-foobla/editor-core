@@ -8,6 +8,8 @@ export interface OrderOps {
 
   removeNode(state: EditorState, nodeId: NodeId): EditorState
 
+  removeNodes(state: EditorState, nodeIds: NodeId[]): EditorState
+
   // moveNode(state: EditorState, nodeId: NodeId, toIndex: number): EditorState
 
   // bringToFront(state: EditorState, nodeId: NodeId): EditorState
@@ -41,17 +43,27 @@ export const orderOps: OrderOps = {
     }
   },
 
+  removeNodes(state: EditorState, nodeIds: NodeId[]): EditorState {
+    if (nodeIds.length === 0) {
+      return {
+        ...state,
+        order: [...state.order]
+      }
+    }
+    const toRemove = new Set(nodeIds)
+    const newOrder = state.order.filter(id => !toRemove.has(id))
+    return {
+      ...state,
+      order: newOrder
+    }
+  },
 
-  reorderNode(
-    state: EditorState,
-    nodeId: NodeId,
-    toIndex: number
-  ): EditorState {
+
+
+  reorderNode(state: EditorState, nodeId: NodeId, toIndex: number): EditorState {
     const nodeIds = state.order
-
     const fromIndex = nodeIds.indexOf(nodeId)
     if (fromIndex === -1) {
-      // throw new Error(`Node with id ${nodeId} does not exist`)
       return state
     }
     const newOrder = nodeIds.slice()

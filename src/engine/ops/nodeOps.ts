@@ -8,6 +8,8 @@ export interface NodeOps {
 
   removeNode(state: EditorState, nodeId: NodeId): EditorState
 
+  removeNodes(state: EditorState, nodeIds: NodeId[]): EditorState
+
   updateNode(
     state: EditorState,
     nodeId: NodeId,
@@ -37,6 +39,17 @@ export const nodeOps: NodeOps = {
 
     const nodes = new Map(state.nodes)
     nodes.delete(nodeId)
+    return {
+      ...state,
+      nodes
+    }
+  },
+
+  removeNodes(state: EditorState, nodeIds: NodeId[]): EditorState {
+    const nodes = new Map(state.nodes)
+    nodeIds.forEach(nodeId => {
+      nodes.delete(nodeId)
+    })
     return {
       ...state,
       nodes

@@ -134,6 +134,41 @@ describe('orderOps', () => {
     })
   })
 
+  describe('removeNodes', () => {
+    it('should remove multiple nodes from the order', () => {
+      const state = createStateWithNodes(['node-1', 'node-2', 'node-3', 'node-4'])
+
+      const result = orderOps.removeNodes(state, ['node-2', 'node-4'])
+
+      expect(result.order).toEqual(['node-1', 'node-3'])
+    })
+
+    it('should ignore ids not present in the order', () => {
+      const state = createStateWithNodes(['node-1', 'node-2', 'node-3'])
+
+      const result = orderOps.removeNodes(state, ['node-2', 'non-existent'])
+
+      expect(result.order).toEqual(['node-1', 'node-3'])
+    })
+
+    it('should return a new order array when called with empty list', () => {
+      const state = createStateWithNodes(['node-1', 'node-2'])
+
+      const result = orderOps.removeNodes(state, [])
+
+      expect(result.order).toEqual(['node-1', 'node-2'])
+      expect(result.order).not.toBe(state.order)
+    })
+
+    it('should not modify the original state', () => {
+      const state = createStateWithNodes(['node-1', 'node-2', 'node-3'])
+
+      orderOps.removeNodes(state, ['node-2'])
+
+      expect(state.order).toEqual(['node-1', 'node-2', 'node-3'])
+    })
+  })
+
   describe('reorderNode', () => {
     it('should move a node to a new index', () => {
       const state = createStateWithNodes(['node-1', 'node-2', 'node-3', 'node-4'])
