@@ -23,7 +23,7 @@ export interface EditorEngine {
   undo(): void
   redo(): void
   subscribe(listener: Subscriber): () => void
-  notify(): void
+  // notify(): void
 }
 
 export type CreateEditorEngine = (options: EngineOptions) => EditorEngine

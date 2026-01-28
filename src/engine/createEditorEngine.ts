@@ -24,18 +24,18 @@ export const createEditorEngine: CreateEditorEngine = options => {
     if (!intent) {
       throw new Error(`No intent found for command type ${command.type}`)
     }
-    const next = intent(state, command)
+    const prev = state
+    const next = intent(prev, command)
 
-    if (next === state) {
+    if (next === prev) {
       return
     }
 
     const shouldRecordHistory = command.meta?.recordHistory !== false
-    if (shouldRecordHistory) {
-      next.history = historyOps.record(state.history, command)
+    state = {
+      ...next,
+      history: shouldRecordHistory ? historyOps.record(prev.history, command) : prev.history
     }
-    state = next
-
     notify()
   }
   function undo() {
@@ -64,6 +64,5 @@ export const createEditorEngine: CreateEditorEngine = options => {
     undo,
     redo,
     subscribe,
-    notify
   }
 }
