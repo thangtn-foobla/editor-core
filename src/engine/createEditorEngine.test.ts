@@ -3,7 +3,6 @@ import { createEditorEngine } from './createEditorEngine'
 import { intentMap } from './intents'
 import type { EditorState } from '../interfaces/domain/EditorState'
 import type { Node } from '../interfaces/domain/Node'
-import type { Command } from '../interfaces/domain/Command'
 
 function createNode(id: string, type: 'text' | 'image' = 'text'): Node {
   return {
@@ -166,7 +165,7 @@ describe('createEditorEngine', () => {
       expect(() => {
         engine.dispatch({
           type: 'UNKNOWN_COMMAND' as any,
-          payload: {},
+          payload: { nodeId: 'node-1' },
           meta: { source: 'ui' }
         })
       }).toThrow('No intent found for command type UNKNOWN_COMMAND')

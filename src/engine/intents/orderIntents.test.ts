@@ -3,7 +3,6 @@ import { reorderNodeIntent } from './orderIntents'
 import type { EditorState } from '../../interfaces/domain/EditorState'
 import type { Node } from '../../interfaces/domain/Node'
 import type { ReorderCommand } from '../../interfaces/domain/Command'
-import { addNodeIntent } from './nodeIntents'
 
 function createNode(id: string): Node {
   return {

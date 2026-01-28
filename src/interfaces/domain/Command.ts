@@ -59,13 +59,8 @@ export interface SelectNodeCommand extends BaseCommand {
   };
 }
 
-export interface RemoveSelectedNodesCommand extends BaseCommand {
-  type: 'REMOVE_SELECTED_NODES';
-}
-
-
 export type NodeCommand = AddNodeCommand | RemoveNodeCommand | RemoveNodesCommand | UpdateNodeCommand
 export type OrderCommand = ReorderCommand
-export type SelectionCommand = SelectNodeCommand | RemoveSelectedNodesCommand
+export type SelectionCommand = SelectNodeCommand
 
 export type Command = NodeCommand | OrderCommand | SelectionCommand

@@ -1,199 +1,205 @@
-function replay(e, r, i) {
-	return r.reduce((e, r) => {
-		let a = i[r.type];
-		return a ? a(e, r) : e;
+function replay(e, i, a) {
+	return i.reduce((e, i) => {
+		let o = a[i.type];
+		return o ? o(e, i) : e;
 	}, e);
 }
-function undo(r, i, a) {
-	let { past: o, future: s } = r.history;
-	if (o.length === 0) return null;
-	let c = o.at(-1), l = o.slice(0, -1);
+function undo(i, a, o) {
+	let { past: s, future: c } = i.history;
+	if (s.length === 0) return null;
+	let l = s.at(-1), u = s.slice(0, -1);
 	return {
-		...replay(i, l, a),
+		...replay(a, u, o),
 		history: {
-			past: l,
-			future: c ? [c, ...s] : s
+			past: u,
+			future: l ? [l, ...c] : c
 		}
 	};
 }
-function redo(r, i, a) {
-	let { past: o, future: s } = r.history;
-	if (s.length === 0) return null;
-	let c = s[0], l = s.slice(1);
+function redo(i, a, o) {
+	let { past: s, future: c } = i.history;
+	if (c.length === 0) return null;
+	let l = c[0], u = c.slice(1);
 	return {
-		...replay(i, [...o, c], a),
+		...replay(a, [...s, l], o),
 		history: {
-			past: [...o, c],
-			future: l
+			past: [...s, l],
+			future: u
 		}
 	};
 }
 const historyEngine = {
 	undo,
 	redo
-}, historyOps = { record(e, r) {
-	let { past: i } = e;
+}, historyOps = { record(e, i) {
+	let { past: a } = e;
 	return {
 		...e,
-		past: [...i, r]
+		past: [...a, i]
 	};
 } }, createEditorEngine = (e) => {
-	let { initialState: r, intentMap: i } = e, s = r, c = /* @__PURE__ */ new Set();
-	function l() {
-		return s;
-	}
+	let { initialState: i, intentMap: a } = e, c = i, l = /* @__PURE__ */ new Set();
 	function u() {
-		for (let e of c) e(s);
+		return c;
 	}
-	function d(e) {
-		let r = i[e.type];
-		if (!r) throw Error(`No intent found for command type ${e.type}`);
-		let a = s, c = r(a, e);
-		if (c === a) return;
-		let l = e.meta?.recordHistory !== !1;
-		s = {
-			...c,
-			history: l ? historyOps.record(a.history, e) : a.history
-		}, u();
+	function d() {
+		for (let e of l) e(c);
 	}
-	function f() {
-		let e = historyEngine.undo(s, r, i);
-		e && (s = e, u());
+	function f(e) {
+		let i = a[e.type];
+		if (!i) throw Error(`No intent found for command type ${e.type}`);
+		let o = c, l = i(o, e);
+		if (l === o) return;
+		let u = e.meta?.recordHistory !== !1;
+		c = {
+			...l,
+			history: u ? historyOps.record(o.history, e) : o.history
+		}, d();
 	}
 	function p() {
-		let e = historyEngine.redo(s, r, i);
-		e && (s = e, u());
+		let e = historyEngine.undo(c, i, a);
+		e && (c = e, d());
 	}
-	function m(e) {
-		return c.add(e), () => c.delete(e);
+	function m() {
+		let e = historyEngine.redo(c, i, a);
+		e && (c = e, d());
+	}
+	function h(e) {
+		return l.add(e), () => l.delete(e);
 	}
 	return {
-		getState: l,
-		dispatch: d,
-		undo: f,
-		redo: p,
-		subscribe: m
+		getState: u,
+		dispatch: f,
+		undo: p,
+		redo: m,
+		subscribe: h
 	};
 }, nodeOps = {
-	addNode(e, r) {
-		if (e.nodes.has(r.id)) return e;
-		let i = new Map(e.nodes);
-		return i.set(r.id, r), {
+	addNode(e, i) {
+		if (e.nodes.has(i.id)) return e;
+		let a = new Map(e.nodes);
+		return a.set(i.id, i), {
 			...e,
-			nodes: i
+			nodes: a
 		};
 	},
-	removeNode(e, r) {
-		if (!e.nodes.has(r)) throw Error(`Node with id ${r} does not exist`);
-		let i = new Map(e.nodes);
-		return i.delete(r), {
+	removeNode(e, i) {
+		if (!e.nodes.has(i)) throw Error(`Node with id ${i} does not exist`);
+		let a = new Map(e.nodes);
+		return a.delete(i), {
 			...e,
-			nodes: i
+			nodes: a
 		};
 	},
-	removeNodes(e, r) {
-		let i = new Map(e.nodes);
-		return r.forEach((e) => {
-			i.delete(e);
+	removeNodes(e, i) {
+		let a = new Map(e.nodes);
+		return i.forEach((e) => {
+			a.delete(e);
 		}), {
 			...e,
-			nodes: i
+			nodes: a
 		};
 	},
-	updateNode(e, r, i) {
-		let a = e.nodes.get(r);
-		if (!a) throw Error(`Node with id ${r} does not exist`);
-		let o = {
-			...a,
-			...i
-		}, s = new Map(e.nodes);
-		return s.set(r, o), {
+	updateNode(e, i, a) {
+		let o = e.nodes.get(i);
+		if (!o) throw Error(`Node with id ${i} does not exist`);
+		let s = {
+			...o,
+			...a
+		}, c = new Map(e.nodes);
+		return c.set(i, s), {
 			...e,
-			nodes: s
+			nodes: c
 		};
 	}
 }, orderOps = {
-	insertNode(e, r, i) {
-		if (e.nodes.has(r)) return e;
-		let a = e.order.slice();
-		return a.splice(i, 0, r), {
+	insertNode(e, i, a) {
+		if (e.nodes.has(i)) return e;
+		let o = e.order.slice();
+		return o.splice(a, 0, i), {
+			...e,
+			order: o
+		};
+	},
+	removeNode(e, i) {
+		let a = e.order.filter((e) => e !== i);
+		return {
 			...e,
 			order: a
 		};
 	},
-	removeNode(e, r) {
-		let i = e.order.filter((e) => e !== r);
-		return {
-			...e,
-			order: i
-		};
-	},
-	removeNodes(e, r) {
-		if (r.length === 0) return {
+	removeNodes(e, i) {
+		if (i.length === 0) return {
 			...e,
 			order: [...e.order]
 		};
-		let i = new Set(r), a = e.order.filter((e) => !i.has(e));
+		let a = new Set(i), o = e.order.filter((e) => !a.has(e));
 		return {
 			...e,
-			order: a
+			order: o
 		};
 	},
-	reorderNode(e, r, i) {
-		let a = e.order, o = a.indexOf(r);
-		if (o === -1) return e;
-		let s = a.slice();
-		s.splice(o, 1);
-		let c = Math.max(0, Math.min(i, a.length));
-		return s.splice(c, 0, r), {
+	reorderNode(e, i, a) {
+		let o = e.order, s = o.indexOf(i);
+		if (s === -1) return e;
+		let c = o.slice();
+		c.splice(s, 1);
+		let l = Math.max(0, Math.min(a, o.length));
+		return c.splice(l, 0, i), {
 			...e,
-			order: s
+			order: c
 		};
 	}
 }, selectionOps = {
-	selectNodes(e, r) {
+	selectNodes(e, i) {
 		return {
 			...e,
 			selection: {
 				...e.selection,
-				nodeIds: r
+				nodeIds: i
 			}
 		};
 	},
-	deselectNodes(e, r) {
-		let i = new Set(r), a = (e.selection.nodeIds ?? []).filter((e) => !i.has(e));
+	deselectNodes(e, i) {
+		let a = new Set(i), o = (e.selection.nodeIds ?? []).filter((e) => !a.has(e));
 		return {
 			...e,
 			selection: {
 				...e.selection,
-				nodeIds: a
+				nodeIds: o
 			}
 		};
 	}
-}, addNodeIntent = (e, r) => {
-	let { node: i, index: a, select: o } = r.payload, s = e;
-	return s = nodeOps.addNode(s, i), s = orderOps.insertNode(s, i.id, a ?? 0), o && (s = selectionOps.selectNodes(s, [i.id])), s;
-}, removeNodeIntent = (e, r) => {
-	let { nodeId: i } = r.payload;
-	if (!e.nodes.has(i)) return e;
-	let a = e;
-	return a = nodeOps.removeNode(a, i), a = orderOps.removeNode(a, i), a = selectionOps.deselectNodes(a, [i]), a;
-}, updateNodeIntent = (e, r) => {
-	let { nodeId: i, updates: a } = r.payload;
-	if (!e.nodes.has(i)) return e;
-	let o = e.nodes.get(i);
-	return !o || !Object.keys(a).some((e) => o[e] !== a[e]) ? e : nodeOps.updateNode(e, i, a);
-}, reorderNodeIntent = (e, r) => {
-	let { nodeId: i, toIndex: a } = r.payload, o = orderOps.reorderNode(e, i, a);
-	return o === e ? e : (o = selectionOps.deselectNodes(o, [i]), o);
-}, selectNodeIntent = (e, r) => {
-	let { nodeId: i } = r.payload;
-	return selectionOps.selectNodes(e, [i]);
+}, addNodeIntent = (e, i) => {
+	let { node: a, index: o, select: s } = i.payload, c = e;
+	return c = nodeOps.addNode(c, a), c = orderOps.insertNode(c, a.id, o ?? 0), s && (c = selectionOps.selectNodes(c, [a.id])), c;
+}, removeNodeIntent = (e, i) => {
+	let { nodeId: a } = i.payload;
+	if (!e.nodes.has(a)) return e;
+	let o = e;
+	return o = nodeOps.removeNode(o, a), o = orderOps.removeNode(o, a), o = selectionOps.deselectNodes(o, [a]), o;
+}, removeNodesIntent = (e, i) => {
+	let { nodeIds: a } = i.payload;
+	if (a.length === 0) return e;
+	let o = e;
+	return o = nodeOps.removeNodes(o, a), o = orderOps.removeNodes(o, a), o = selectionOps.deselectNodes(o, a), o;
+}, updateNodeIntent = (e, i) => {
+	let { nodeId: a, updates: o } = i.payload;
+	if (!e.nodes.has(a)) return e;
+	let s = e.nodes.get(a);
+	return !s || !Object.keys(o).some((e) => s[e] !== o[e]) ? e : nodeOps.updateNode(e, a, o);
+}, reorderNodeIntent = (e, i) => {
+	let { nodeId: a, toIndex: o } = i.payload, s = orderOps.reorderNode(e, a, o);
+	return s === e ? e : (s = selectionOps.deselectNodes(s, [a]), s);
+}, selectNodeIntent = (e, i) => {
+	let { nodeId: a } = i.payload;
+	return selectionOps.selectNodes(e, [a]);
 }, intentMap = {
 	ADD_NODE: addNodeIntent,
 	REMOVE_NODE: removeNodeIntent,
 	UPDATE_NODE: updateNodeIntent,
 	REORDER: reorderNodeIntent,
-	SELECT_NODE: selectNodeIntent
+	SELECT_NODE: selectNodeIntent,
+	REMOVE_NODES: removeNodesIntent
 };
 export { addNodeIntent, createEditorEngine, intentMap, nodeOps, orderOps, removeNodeIntent, reorderNodeIntent, selectNodeIntent, selectionOps, updateNodeIntent };
