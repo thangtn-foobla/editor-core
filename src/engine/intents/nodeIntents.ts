@@ -28,6 +28,18 @@ export const removeNodeIntent: IntentHandler<'REMOVE_NODE'> = (state, cmd) => {
 
 }
 
+export const removeNodesIntent: IntentHandler<'REMOVE_NODES'> = (state, cmd) => {
+  const { nodeIds } = cmd.payload
+  if (nodeIds.length === 0) {
+    return state
+  }
+  let next = state
+  next = nodeOps.removeNodes(next, nodeIds)
+  next = orderOps.removeNodes(next, nodeIds)
+  next = selectionOps.deselectNodes(next, nodeIds)
+  return next
+}
+
 export const updateNodeIntent: IntentHandler<'UPDATE_NODE'> = (state, cmd) => {
   const { nodeId, updates } = cmd.payload
   if (!state.nodes.has(nodeId)) {

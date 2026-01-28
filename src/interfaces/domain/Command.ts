@@ -29,6 +29,13 @@ export interface RemoveNodeCommand extends BaseCommand {
   };
 }
 
+export interface RemoveNodesCommand extends BaseCommand {
+  type: 'REMOVE_NODES';
+  payload: {
+    nodeIds: Node['id'][];
+  };
+}
+
 export interface UpdateNodeCommand extends BaseCommand {
   type: 'UPDATE_NODE';
   payload: {
@@ -57,7 +64,7 @@ export interface RemoveSelectedNodesCommand extends BaseCommand {
 }
 
 
-export type NodeCommand = AddNodeCommand | RemoveNodeCommand | UpdateNodeCommand
+export type NodeCommand = AddNodeCommand | RemoveNodeCommand | RemoveNodesCommand | UpdateNodeCommand
 export type OrderCommand = ReorderCommand
 export type SelectionCommand = SelectNodeCommand | RemoveSelectedNodesCommand
 

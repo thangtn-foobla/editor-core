@@ -1,8 +1,18 @@
 import { describe, it, expect } from 'vitest'
-import { addNodeIntent, removeNodeIntent, updateNodeIntent } from './nodeIntents'
+import {
+  addNodeIntent,
+  removeNodeIntent,
+  removeNodesIntent,
+  updateNodeIntent
+} from './nodeIntents'
 import type { EditorState } from '../../interfaces/domain/EditorState'
 import type { Node } from '../../interfaces/domain/Node'
-import type { AddNodeCommand, RemoveNodeCommand, UpdateNodeCommand } from '../../interfaces/domain/Command'
+import type {
+  AddNodeCommand,
+  RemoveNodeCommand,
+  RemoveNodesCommand,
+  UpdateNodeCommand
+} from '../../interfaces/domain/Command'
 
 function createNode(id: string, type: 'text' | 'image' = 'text'): Node {
   return {
@@ -234,6 +244,98 @@ describe('nodeIntents', () => {
       })
 
       expect(stateWithNode.nodes.has('node-1')).toBe(true)
+    })
+  })
+
+  describe('removeNodesIntent', () => {
+    function setupStateWithNodes(
+      nodeIds: string[],
+      selectedIds: string[] = []
+    ): EditorState {
+      let state = createInitialState()
+      nodeIds.forEach(id => {
+        state = addNodeIntent(state, {
+          type: 'ADD_NODE',
+          payload: { node: createNode(id) },
+          meta: { source: 'ui' }
+        })
+      })
+      // orderOps.insertNode hiện chưa hoạt động như mong muốn nên set thủ công
+      state = {
+        ...state,
+        order: [...nodeIds],
+        selection: { nodeIds: selectedIds }
+      }
+      return state
+    }
+
+    it('should do nothing when nodeIds is empty', () => {
+      const state = setupStateWithNodes(['node-1', 'node-2'])
+      const command: RemoveNodesCommand = {
+        type: 'REMOVE_NODES',
+        payload: { nodeIds: [] },
+        meta: { source: 'ui' }
+      }
+
+      const result = removeNodesIntent(state, command)
+
+      expect(result).toBe(state)
+    })
+
+    it('should remove multiple nodes from nodes and order and selection', () => {
+      const state = setupStateWithNodes(
+        ['node-1', 'node-2', 'node-3'],
+        ['node-1', 'node-3']
+      )
+      const command: RemoveNodesCommand = {
+        type: 'REMOVE_NODES',
+        payload: { nodeIds: ['node-1', 'node-3'] },
+        meta: { source: 'ui' }
+      }
+
+      const result = removeNodesIntent(state, command)
+
+      // nodes
+      expect(result.nodes.has('node-1')).toBe(false)
+      expect(result.nodes.has('node-3')).toBe(false)
+      expect(result.nodes.has('node-2')).toBe(true)
+
+      // order
+      expect(result.order).toEqual(['node-2'])
+
+      // selection
+      expect(result.selection.nodeIds).toEqual([])
+    })
+
+    it('should ignore nodeIds that are not present', () => {
+      const state = setupStateWithNodes(['node-1', 'node-2'], ['node-1'])
+      const command: RemoveNodesCommand = {
+        type: 'REMOVE_NODES',
+        payload: { nodeIds: ['node-1', 'non-existent'] },
+        meta: { source: 'ui' }
+      }
+
+      const result = removeNodesIntent(state, command)
+
+      expect(result.nodes.has('node-1')).toBe(false)
+      expect(result.nodes.has('node-2')).toBe(true)
+      expect(result.order).toEqual(['node-2'])
+      expect(result.selection.nodeIds).toEqual([])
+    })
+
+    it('should not modify the original state', () => {
+      const state = setupStateWithNodes(['node-1', 'node-2'], ['node-1'])
+      const command: RemoveNodesCommand = {
+        type: 'REMOVE_NODES',
+        payload: { nodeIds: ['node-1'] },
+        meta: { source: 'ui' }
+      }
+
+      removeNodesIntent(state, command)
+
+      expect(state.nodes.has('node-1')).toBe(true)
+      expect(state.order).toEqual(['node-1', 'node-2'])
+      expect(state.selection.nodeIds).toEqual(['node-1'])
     })
   })
 

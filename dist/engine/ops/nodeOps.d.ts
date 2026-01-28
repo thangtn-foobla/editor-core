@@ -4,6 +4,7 @@ type NodeId = Node['id'];
 export interface NodeOps {
     addNode(state: EditorState, node: Node): EditorState;
     removeNode(state: EditorState, nodeId: NodeId): EditorState;
+    removeNodes(state: EditorState, nodeIds: NodeId[]): EditorState;
     updateNode(state: EditorState, nodeId: NodeId, updates: Partial<Node>): EditorState;
 }
 export declare const nodeOps: NodeOps;

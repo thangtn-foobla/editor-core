@@ -91,6 +91,15 @@ const historyEngine = {
 			nodes: i
 		};
 	},
+	removeNodes(e, r) {
+		let i = new Map(e.nodes);
+		return r.forEach((e) => {
+			i.delete(e);
+		}), {
+			...e,
+			nodes: i
+		};
+	},
 	updateNode(e, r, i) {
 		let a = e.nodes.get(r);
 		if (!a) throw Error(`Node with id ${r} does not exist`);
@@ -119,6 +128,17 @@ const historyEngine = {
 			order: i
 		};
 	},
+	removeNodes(e, r) {
+		if (r.length === 0) return {
+			...e,
+			order: [...e.order]
+		};
+		let i = new Set(r), a = e.order.filter((e) => !i.has(e));
+		return {
+			...e,
+			order: a
+		};
+	},
 	reorderNode(e, r, i) {
 		let a = e.order, o = a.indexOf(r);
 		if (o === -1) return e;
@@ -141,11 +161,12 @@ const historyEngine = {
 		};
 	},
 	deselectNodes(e, r) {
+		let i = new Set(r), a = (e.selection.nodeIds ?? []).filter((e) => !i.has(e));
 		return {
 			...e,
 			selection: {
 				...e.selection,
-				nodeIds: r
+				nodeIds: a
 			}
 		};
 	}

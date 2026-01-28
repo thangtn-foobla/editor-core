@@ -4,6 +4,7 @@ type NodeId = Node['id'];
 export interface OrderOps {
     insertNode(state: EditorState, nodeId: NodeId, index?: number): EditorState;
     removeNode(state: EditorState, nodeId: NodeId): EditorState;
+    removeNodes(state: EditorState, nodeIds: NodeId[]): EditorState;
     reorderNode(state: EditorState, nodeId: NodeId, toIndex: number): EditorState;
 }
 export declare const orderOps: OrderOps;
