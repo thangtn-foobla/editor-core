@@ -48,8 +48,13 @@ const historyEngine = {
 	function d(e) {
 		let r = i[e.type];
 		if (!r) throw Error(`No intent found for command type ${e.type}`);
-		let a = r(s, e);
-		a !== s && (a.history = historyOps.record(s.history, e), u());
+		let a = s, c = r(a, e);
+		if (c === a) return;
+		let l = e.meta?.recordHistory !== !1;
+		s = {
+			...c,
+			history: l ? historyOps.record(a.history, e) : a.history
+		}, u();
 	}
 	function f() {
 		let e = historyEngine.undo(s, r, i);
@@ -67,8 +72,7 @@ const historyEngine = {
 		dispatch: d,
 		undo: f,
 		redo: p,
-		subscribe: m,
-		notify: u
+		subscribe: m
 	};
 }, nodeOps = {
 	addNode(e, r) {
