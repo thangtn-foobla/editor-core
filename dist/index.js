@@ -197,9 +197,13 @@ const historyEngine = {
 }, intentMap = {
 	ADD_NODE: addNodeIntent,
 	REMOVE_NODE: removeNodeIntent,
+	REMOVE_NODES: removeNodesIntent,
 	UPDATE_NODE: updateNodeIntent,
 	REORDER: reorderNodeIntent,
 	SELECT_NODE: selectNodeIntent,
-	REMOVE_NODES: removeNodesIntent
+	DESELECT_NODES: (e, i) => {
+		let { nodeIds: a } = i.payload;
+		return selectionOps.deselectNodes(e, a);
+	}
 };
 export { addNodeIntent, createEditorEngine, intentMap, nodeOps, orderOps, removeNodeIntent, reorderNodeIntent, selectNodeIntent, selectionOps, updateNodeIntent };

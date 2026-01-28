@@ -2,15 +2,16 @@ import type { IntentMap } from '../../interfaces/domain/Engine'
 
 import { addNodeIntent, removeNodeIntent, removeNodesIntent, updateNodeIntent } from './nodeIntents'
 import { reorderNodeIntent } from './orderIntents'
-import { selectNodeIntent } from './selectionIntents'
+import { deselectNodesIntent, selectNodeIntent } from './selectionIntents'
 
 export const intentMap = {
   ADD_NODE: addNodeIntent,
   REMOVE_NODE: removeNodeIntent,
+  REMOVE_NODES: removeNodesIntent,
   UPDATE_NODE: updateNodeIntent,
   REORDER: reorderNodeIntent,
   SELECT_NODE: selectNodeIntent,
-  REMOVE_NODES: removeNodesIntent,
+  DESELECT_NODES: deselectNodesIntent,
 } satisfies IntentMap
 
 export { addNodeIntent, removeNodeIntent, updateNodeIntent, reorderNodeIntent, selectNodeIntent }

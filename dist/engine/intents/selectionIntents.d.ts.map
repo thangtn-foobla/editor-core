@@ -1,1 +1,1 @@
-{"version":3,"file":"selectionIntents.d.ts","sourceRoot":"","sources":["../../../src/engine/intents/selectionIntents.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,aAAa,EAAE,MAAM,gCAAgC,CAAA;AAGnE,eAAO,MAAM,gBAAgB,EAAE,aAAa,CAAC,aAAa,CAGzD,CAAA"}
+{"version":3,"file":"selectionIntents.d.ts","sourceRoot":"","sources":["../../../src/engine/intents/selectionIntents.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,aAAa,EAAE,MAAM,gCAAgC,CAAA;AAGnE,eAAO,MAAM,gBAAgB,EAAE,aAAa,CAAC,aAAa,CAGzD,CAAA;AAGD,eAAO,MAAM,mBAAmB,EAAE,aAAa,CAAC,gBAAgB,CAG/D,CAAA"}

@@ -6,3 +6,9 @@ export const selectNodeIntent: IntentHandler<'SELECT_NODE'> = (state, cmd) => {
   return selectionOps.selectNodes(state, [nodeId])
 }
 
+
+export const deselectNodesIntent: IntentHandler<'DESELECT_NODES'> = (state, cmd) => {
+  const { nodeIds } = cmd.payload
+  return selectionOps.deselectNodes(state, nodeIds)
+}
+

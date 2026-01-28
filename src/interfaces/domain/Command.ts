@@ -59,8 +59,15 @@ export interface SelectNodeCommand extends BaseCommand {
   };
 }
 
+export interface DeselectNodesCommand extends BaseCommand {
+  type: 'DESELECT_NODES';
+  payload: {
+    nodeIds: Node['id'][];
+  };
+}
+
 export type NodeCommand = AddNodeCommand | RemoveNodeCommand | RemoveNodesCommand | UpdateNodeCommand
 export type OrderCommand = ReorderCommand
-export type SelectionCommand = SelectNodeCommand
+export type SelectionCommand = SelectNodeCommand | DeselectNodesCommand
 
 export type Command = NodeCommand | OrderCommand | SelectionCommand
