@@ -7,6 +7,12 @@ import type { Command } from '../interfaces/domain/Command'
 import { historyEngine } from './historyEngine'
 import { historyOps } from './ops/historyOps'
 
+/**
+ * Creates a new editor engine instance wired up with history support.
+ *
+ * The returned engine exposes a minimal API for reading state,
+ * dispatching commands and subscribing to changes.
+ */
 export const createEditorEngine: CreateEditorEngine = options => {
   const { initialState, intentMap } = options
   let state = initialState

@@ -1,18 +1,43 @@
 import type { Node } from './Node'
 
-
+/**
+ * Common properties shared by all editor commands.
+ */
 interface BaseCommand {
+  /**
+   * Discriminant string describing what this command does.
+   */
   type: string;
+  /**
+   * Optional metadata that controls how the engine treats this command.
+   */
   meta?: CommandMeta;
 }
 
+/**
+ * Optional metadata that can influence how a command is processed.
+ */
 export interface CommandMeta {
+  /**
+   * Whether this command should be recorded in history for undo/redo.
+   *
+   * Defaults to `true`. Set to `false` to skip history.
+   */
   recordHistory?: boolean;
+  /**
+   * Optional identifier to group related commands together.
+   */
   groupId?: string;
+  /**
+   * Where this command originated from.
+   */
   source: 'ui' | 'remote' | 'system'
 
 }
 
+/**
+ * Command for adding a node to the editor.
+ */
 export interface AddNodeCommand extends BaseCommand {
   type: 'ADD_NODE';
   payload: {
@@ -22,6 +47,9 @@ export interface AddNodeCommand extends BaseCommand {
   };
 }
 
+/**
+ * Command for removing a single node.
+ */
 export interface RemoveNodeCommand extends BaseCommand {
   type: 'REMOVE_NODE';
   payload: {
@@ -29,6 +57,9 @@ export interface RemoveNodeCommand extends BaseCommand {
   };
 }
 
+/**
+ * Command for removing multiple nodes at once.
+ */
 export interface RemoveNodesCommand extends BaseCommand {
   type: 'REMOVE_NODES';
   payload: {
@@ -36,6 +67,9 @@ export interface RemoveNodesCommand extends BaseCommand {
   };
 }
 
+/**
+ * Command for applying a partial update to an existing node.
+ */
 export interface UpdateNodeCommand extends BaseCommand {
   type: 'UPDATE_NODE';
   payload: {
@@ -44,6 +78,9 @@ export interface UpdateNodeCommand extends BaseCommand {
   };
 }
 
+/**
+ * Command for reordering a node within the stacking order.
+ */
 export interface ReorderCommand extends BaseCommand {
   type: 'REORDER';
   payload: {
@@ -52,6 +89,9 @@ export interface ReorderCommand extends BaseCommand {
   };
 }
 
+/**
+ * Command for selecting a single node.
+ */
 export interface SelectNodeCommand extends BaseCommand {
   type: 'SELECT_NODE';
   payload: {
@@ -59,6 +99,9 @@ export interface SelectNodeCommand extends BaseCommand {
   };
 }
 
+/**
+ * Command for deselecting one or more nodes.
+ */
 export interface DeselectNodesCommand extends BaseCommand {
   type: 'DESELECT_NODES';
   payload: {
@@ -66,8 +109,22 @@ export interface DeselectNodesCommand extends BaseCommand {
   };
 }
 
+/**
+ * All commands that operate directly on nodes.
+ */
 export type NodeCommand = AddNodeCommand | RemoveNodeCommand | RemoveNodesCommand | UpdateNodeCommand
+
+/**
+ * All commands that affect node ordering.
+ */
 export type OrderCommand = ReorderCommand
+
+/**
+ * All commands that affect the current selection.
+ */
 export type SelectionCommand = SelectNodeCommand | DeselectNodesCommand
 
+/**
+ * Union of all supported command types.
+ */
 export type Command = NodeCommand | OrderCommand | SelectionCommand
