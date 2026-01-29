@@ -27,4 +27,18 @@ export interface EditorState {
    * Undo/redo history state.
    */
   history: HistoryState
+
+  viewport: Viewport
+}
+
+export interface Viewport {
+  /**
+   * Zoom scale (1.0 is 100%)
+   */
+  scale: number
+  /**
+   * Translation of the world space
+   */
+  x: number
+  y: number
 }

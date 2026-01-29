@@ -9,6 +9,8 @@ export declare const intentMap: {
     REORDER: import("../../interfaces/domain").IntentHandler<"REORDER">;
     SELECT_NODE: import("../../interfaces/domain").IntentHandler<"SELECT_NODE">;
     DESELECT_NODES: import("../../interfaces/domain").IntentHandler<"DESELECT_NODES">;
+    SET_ZOOM: import("../../interfaces/domain").IntentHandler<"SET_ZOOM">;
+    PAN_VIEWPORT: import("../../interfaces/domain").IntentHandler<"PAN_VIEWPORT">;
 };
 export { addNodeIntent, removeNodeIntent, updateNodeIntent, reorderNodeIntent, selectNodeIntent };
 //# sourceMappingURL=index.d.ts.map

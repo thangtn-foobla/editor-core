@@ -109,6 +109,24 @@ export interface DeselectNodesCommand extends BaseCommand {
   };
 }
 
+
+export interface SetZoomCommand extends BaseCommand {
+  type: 'SET_ZOOM';
+  payload: {
+    scale: number;
+    center?: { x: number; y: number };
+  };
+}
+
+export interface PanViewportCommand extends BaseCommand {
+  type: 'PAN_VIEWPORT';
+  payload: {
+    dx: number;
+    dy: number;
+  };
+}
+
+
 /**
  * All commands that operate directly on nodes.
  */
@@ -124,7 +142,10 @@ export type OrderCommand = ReorderCommand
  */
 export type SelectionCommand = SelectNodeCommand | DeselectNodesCommand
 
+
+export type ZoomCommand = SetZoomCommand | PanViewportCommand
+
 /**
  * Union of all supported command types.
  */
-export type Command = NodeCommand | OrderCommand | SelectionCommand
+export type Command = NodeCommand | OrderCommand | SelectionCommand | ZoomCommand

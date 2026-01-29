@@ -23,7 +23,8 @@ function createStateWithNodes(nodeIds: string[]): EditorState {
     nodes,
     order: [...nodeIds],
     selection: { nodeIds: [] },
-    history: { past: [], future: [] }
+    history: { past: [], future: [] },
+    viewport: { scale: 1, x: 0, y: 0 }
   }
 }
 

@@ -22,7 +22,8 @@ function createStateWithSelection(nodeIds: string[], selectedIds: string[]): Edi
     nodes,
     order: [...nodeIds],
     selection: { nodeIds: selectedIds },
-    history: { past: [], future: [] }
+    history: { past: [], future: [] },
+    viewport: { scale: 1, x: 0, y: 0 }
   }
 }
 

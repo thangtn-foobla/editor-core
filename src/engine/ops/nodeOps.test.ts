@@ -18,7 +18,8 @@ function createInitialState(): EditorState {
     nodes: new Map(),
     order: [],
     selection: { nodeIds: [] },
-    history: { past: [], future: [] }
+    history: { past: [], future: [] },
+    viewport: { scale: 1, x: 0, y: 0 }
   }
 }
 
