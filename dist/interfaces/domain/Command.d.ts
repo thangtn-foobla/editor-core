@@ -106,6 +106,11 @@ export interface SetZoomCommand extends BaseCommand {
             x: number;
             y: number;
         };
+        /** Screen position (container coords) – when set, keeps world `center` fixed at this point (zoom at cursor). */
+        pointer?: {
+            x: number;
+            y: number;
+        };
     };
 }
 export interface PanViewportCommand extends BaseCommand {

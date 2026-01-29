@@ -198,11 +198,22 @@ const historyEngine = {
 	let { nodeIds: s } = o.payload;
 	return selectionOps.deselectNodes(e, s);
 }, viewportOps = {
-	setZoom(e, o, s) {
+	setZoom(e, o, s, c) {
 		if (o <= 0) return e;
-		let c = e.viewport;
+		let l = e.viewport;
+		if (c != null && s != null) {
+			let l = s.x - c.x / o, u = s.y - c.y / o;
+			return {
+				...e,
+				viewport: {
+					scale: o,
+					x: l,
+					y: u
+				}
+			};
+		}
 		if (s) {
-			let l = o / c.scale, u = s.x - (s.x - c.x) * l, d = s.y - (s.y - c.y) * l;
+			let c = o / l.scale, u = s.x - (s.x - l.x) * c, d = s.y - (s.y - l.y) * c;
 			return {
 				...e,
 				viewport: {
@@ -215,7 +226,7 @@ const historyEngine = {
 		return {
 			...e,
 			viewport: {
-				...c,
+				...l,
 				scale: o
 			}
 		};
@@ -240,8 +251,8 @@ const historyEngine = {
 	SELECT_NODE: selectNodeIntent,
 	DESELECT_NODES: deselectNodesIntent,
 	SET_ZOOM: (e, o) => {
-		let { scale: s, center: c } = o.payload;
-		return viewportOps.setZoom(e, s, c);
+		let { scale: s, center: c, pointer: l } = o.payload;
+		return viewportOps.setZoom(e, s, c, l);
 	},
 	PAN_VIEWPORT: (e, o) => {
 		let { dx: s, dy: c } = o.payload;

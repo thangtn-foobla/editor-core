@@ -5,8 +5,12 @@ import type { EditorState } from "../../interfaces/domain/EditorState";
 export interface ViewportOps {
     /**
      * Sets the zoom scale, optionally keeping a given point fixed on screen.
+     * When `pointer` is provided (zoom at cursor), world point `center` stays at screen position `pointer`.
      */
     setZoom(state: EditorState, scale: number, center?: {
+        x: number;
+        y: number;
+    }, pointer?: {
         x: number;
         y: number;
     }): EditorState;

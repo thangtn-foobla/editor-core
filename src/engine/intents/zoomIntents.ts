@@ -5,8 +5,8 @@ import { viewportOps } from "../ops/viewportOps";
  * Intent handler that updates the viewport zoom level.
  */
 export const zoomIntent: IntentHandler<'SET_ZOOM'> = (state, cmd) => {
-  const { scale, center } = cmd.payload
-  return viewportOps.setZoom(state, scale, center)
+  const { scale, center, pointer } = cmd.payload
+  return viewportOps.setZoom(state, scale, center, pointer)
 }
 
 /**

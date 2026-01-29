@@ -115,6 +115,8 @@ export interface SetZoomCommand extends BaseCommand {
   payload: {
     scale: number;
     center?: { x: number; y: number };
+    /** Screen position (container coords) – when set, keeps world `center` fixed at this point (zoom at cursor). */
+    pointer?: { x: number; y: number };
   };
 }
 

@@ -47,7 +47,24 @@ describe('viewportOps', () => {
       expect(resultNegative).toBe(state)
     })
 
-    it('should zoom relative to center point', () => {
+    it('should zoom at cursor when pointer is provided (center fixed at screen position)', () => {
+      const state = createState({ scale: 1, x: 0, y: 0 })
+      const center = { x: 100, y: 50 }
+      const pointer = { x: 200, y: 100 }
+      const scale = 2
+
+      const result = viewportOps.setZoom(state, scale, center, pointer)
+
+      // newViewport.x = center.x - pointer.x / scale
+      expect(result.viewport.scale).toBe(scale)
+      expect(result.viewport.x).toBe(100 - 200 / 2)
+      expect(result.viewport.y).toBe(50 - 100 / 2)
+      // Verify: (center - viewport) * scale = pointer
+      expect((center.x - result.viewport.x) * scale).toBe(pointer.x)
+      expect((center.y - result.viewport.y) * scale).toBe(pointer.y)
+    })
+
+    it('should zoom relative to center point when no pointer', () => {
       const state = createState({ scale: 1, x: 0, y: 0 })
       const center = { x: 100, y: 50 }
       const scale = 2

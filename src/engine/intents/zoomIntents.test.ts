@@ -39,7 +39,27 @@ describe('zoomIntents', () => {
       zoomIntent(state, command as any)
 
       expect(spy).toHaveBeenCalledTimes(1)
-      expect(spy).toHaveBeenCalledWith(state, 2, { x: 100, y: 50 })
+      expect(spy).toHaveBeenCalledWith(state, 2, { x: 100, y: 50 }, undefined)
+      spy.mockRestore()
+    })
+
+    it('should pass pointer to viewportOps.setZoom when in payload', () => {
+      const state = createState()
+      const spy = vi.spyOn(viewportOpsModule.viewportOps, 'setZoom')
+      const command: ZoomCommand = {
+        type: 'SET_ZOOM',
+        payload: {
+          scale: 2,
+          center: { x: 100, y: 50 },
+          pointer: { x: 200, y: 100 }
+        },
+        meta: { source: 'ui' }
+      }
+
+      zoomIntent(state, command as any)
+
+      expect(spy).toHaveBeenCalledTimes(1)
+      expect(spy).toHaveBeenCalledWith(state, 2, { x: 100, y: 50 }, { x: 200, y: 100 })
     })
 
     it('should return the result of viewportOps.setZoom', () => {
