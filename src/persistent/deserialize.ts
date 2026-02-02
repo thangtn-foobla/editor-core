@@ -1,6 +1,9 @@
 import { EditorState, Node } from "../interfaces/domain";
 import { SerializableDocument } from "../interfaces/SerializableDocument";
 
+/**
+ * Builds editor state from a serialized document, using initialState for defaults (e.g. history, viewport).
+ */
 export function deserialize(document: SerializableDocument, initialState: EditorState): EditorState {
 
   if (document.version !== 1) {
