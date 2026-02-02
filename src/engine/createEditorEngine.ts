@@ -3,7 +3,7 @@ import type {
   IntentHandler,
   Subscriber
 } from '../interfaces/domain/Engine'
-import type { Command } from '../interfaces/domain/Command'
+import type { EditorState, Command } from '../interfaces/domain'
 import { historyEngine } from './historyEngine'
 import { historyOps } from './ops/historyOps'
 
@@ -63,6 +63,11 @@ export const createEditorEngine: CreateEditorEngine = options => {
     return () => subscribers.delete(listener)
   }
 
+  function replaceState(nextState: EditorState) {
+    state = nextState
+    notify()
+  }
+
 
   return {
     getState,
@@ -70,5 +75,6 @@ export const createEditorEngine: CreateEditorEngine = options => {
     undo,
     redo,
     subscribe,
+    replaceState,
   }
 }

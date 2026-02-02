@@ -1,244 +1,248 @@
-function replay(e, o, s) {
-	return o.reduce((e, o) => {
-		let c = s[o.type];
-		return c ? c(e, o) : e;
+function replay(e, a, o) {
+	return a.reduce((e, a) => {
+		let s = o[a.type];
+		return s ? s(e, a) : e;
 	}, e);
 }
-function undo(o, s, c) {
-	let { past: l, future: u } = o.history;
-	if (l.length === 0) return null;
-	let d = l.at(-1), f = l.slice(0, -1);
+function undo(a, o, s) {
+	let { past: c, future: l } = a.history;
+	if (c.length === 0) return null;
+	let u = c.at(-1), d = c.slice(0, -1);
 	return {
-		...replay(s, f, c),
+		...replay(o, d, s),
 		history: {
-			past: f,
-			future: d ? [d, ...u] : u
+			past: d,
+			future: u ? [u, ...l] : l
 		}
 	};
 }
-function redo(o, s, c) {
-	let { past: l, future: u } = o.history;
-	if (u.length === 0) return null;
-	let d = u[0], f = u.slice(1);
+function redo(a, o, s) {
+	let { past: c, future: l } = a.history;
+	if (l.length === 0) return null;
+	let u = l[0], d = l.slice(1);
 	return {
-		...replay(s, [...l, d], c),
+		...replay(o, [...c, u], s),
 		history: {
-			past: [...l, d],
-			future: f
+			past: [...c, u],
+			future: d
 		}
 	};
 }
 const historyEngine = {
 	undo,
 	redo
-}, historyOps = { record(e, o) {
-	let { past: s } = e;
+}, historyOps = { record(e, a) {
+	let { past: o } = e;
 	return {
 		...e,
-		past: [...s, o]
+		past: [...o, a]
 	};
 } }, createEditorEngine = (e) => {
-	let { initialState: o, intentMap: s } = e, u = o, d = /* @__PURE__ */ new Set();
+	let { initialState: a, intentMap: o } = e, l = a, u = /* @__PURE__ */ new Set();
+	function d() {
+		return l;
+	}
 	function f() {
-		return u;
+		for (let e of u) e(l);
 	}
-	function p() {
-		for (let e of d) e(u);
+	function p(e) {
+		let a = o[e.type];
+		if (!a) throw Error(`No intent found for command type ${e.type}`);
+		let s = l, u = a(s, e);
+		if (u === s) return;
+		let d = e.meta?.recordHistory !== !1;
+		l = {
+			...u,
+			history: d ? historyOps.record(s.history, e) : s.history
+		}, f();
 	}
-	function m(e) {
-		let o = s[e.type];
-		if (!o) throw Error(`No intent found for command type ${e.type}`);
-		let c = u, d = o(c, e);
-		if (d === c) return;
-		let f = e.meta?.recordHistory !== !1;
-		u = {
-			...d,
-			history: f ? historyOps.record(c.history, e) : c.history
-		}, p();
+	function m() {
+		let e = historyEngine.undo(l, a, o);
+		e && (l = e, f());
 	}
 	function h() {
-		let e = historyEngine.undo(u, o, s);
-		e && (u = e, p());
+		let e = historyEngine.redo(l, a, o);
+		e && (l = e, f());
 	}
-	function g() {
-		let e = historyEngine.redo(u, o, s);
-		e && (u = e, p());
+	function g(e) {
+		return u.add(e), () => u.delete(e);
 	}
 	function _(e) {
-		return d.add(e), () => d.delete(e);
+		l = e, f();
 	}
 	return {
-		getState: f,
-		dispatch: m,
-		undo: h,
-		redo: g,
-		subscribe: _
+		getState: d,
+		dispatch: p,
+		undo: m,
+		redo: h,
+		subscribe: g,
+		replaceState: _
 	};
 }, nodeOps = {
-	addNode(e, o) {
-		if (e.nodes.has(o.id)) return e;
-		let s = new Map(e.nodes);
-		return s.set(o.id, o), {
+	addNode(e, a) {
+		if (e.nodes.has(a.id)) return e;
+		let o = new Map(e.nodes);
+		return o.set(a.id, a), {
 			...e,
-			nodes: s
+			nodes: o
 		};
 	},
-	removeNode(e, o) {
-		if (!e.nodes.has(o)) throw Error(`Node with id ${o} does not exist`);
-		let s = new Map(e.nodes);
-		return s.delete(o), {
+	removeNode(e, a) {
+		if (!e.nodes.has(a)) throw Error(`Node with id ${a} does not exist`);
+		let o = new Map(e.nodes);
+		return o.delete(a), {
 			...e,
-			nodes: s
+			nodes: o
 		};
 	},
-	removeNodes(e, o) {
-		let s = new Map(e.nodes);
-		return o.forEach((e) => {
-			s.delete(e);
+	removeNodes(e, a) {
+		let o = new Map(e.nodes);
+		return a.forEach((e) => {
+			o.delete(e);
 		}), {
 			...e,
-			nodes: s
+			nodes: o
 		};
 	},
-	updateNode(e, o, s) {
-		let c = e.nodes.get(o);
-		if (!c) throw Error(`Node with id ${o} does not exist`);
-		let l = {
-			...c,
-			...s
-		}, u = new Map(e.nodes);
-		return u.set(o, l), {
+	updateNode(e, a, o) {
+		let s = e.nodes.get(a);
+		if (!s) throw Error(`Node with id ${a} does not exist`);
+		let c = {
+			...s,
+			...o
+		}, l = new Map(e.nodes);
+		return l.set(a, c), {
 			...e,
-			nodes: u
+			nodes: l
 		};
 	}
 }, orderOps = {
-	insertNode(e, o, s) {
-		if (e.nodes.has(o)) return e;
-		let c = e.order.slice();
-		return c.splice(s, 0, o), {
+	insertNode(e, a, o) {
+		if (e.nodes.has(a)) return e;
+		let s = e.order.slice();
+		return s.splice(o, 0, a), {
 			...e,
-			order: c
+			order: s
 		};
 	},
-	removeNode(e, o) {
-		let s = e.order.filter((e) => e !== o);
+	removeNode(e, a) {
+		let o = e.order.filter((e) => e !== a);
+		return {
+			...e,
+			order: o
+		};
+	},
+	removeNodes(e, a) {
+		if (a.length === 0) return {
+			...e,
+			order: [...e.order]
+		};
+		let o = new Set(a), s = e.order.filter((e) => !o.has(e));
 		return {
 			...e,
 			order: s
 		};
 	},
-	removeNodes(e, o) {
-		if (o.length === 0) return {
+	reorderNode(e, a, o) {
+		let s = e.order, c = s.indexOf(a);
+		if (c === -1) return e;
+		let l = s.slice();
+		l.splice(c, 1);
+		let u = Math.max(0, Math.min(o, s.length));
+		return l.splice(u, 0, a), {
 			...e,
-			order: [...e.order]
-		};
-		let s = new Set(o), c = e.order.filter((e) => !s.has(e));
-		return {
-			...e,
-			order: c
-		};
-	},
-	reorderNode(e, o, s) {
-		let c = e.order, l = c.indexOf(o);
-		if (l === -1) return e;
-		let u = c.slice();
-		u.splice(l, 1);
-		let d = Math.max(0, Math.min(s, c.length));
-		return u.splice(d, 0, o), {
-			...e,
-			order: u
+			order: l
 		};
 	}
 }, selectionOps = {
-	selectNodes(e, o) {
+	selectNodes(e, a) {
 		return {
 			...e,
 			selection: {
 				...e.selection,
-				nodeIds: o
+				nodeIds: a
 			}
 		};
 	},
-	deselectNodes(e, o) {
-		let s = new Set(o), c = (e.selection.nodeIds ?? []).filter((e) => !s.has(e));
+	deselectNodes(e, a) {
+		let o = new Set(a), s = (e.selection.nodeIds ?? []).filter((e) => !o.has(e));
 		return {
 			...e,
 			selection: {
 				...e.selection,
-				nodeIds: c
+				nodeIds: s
 			}
 		};
 	}
-}, addNodeIntent = (e, o) => {
-	let { node: s, index: c, select: l } = o.payload, u = e;
-	return u = nodeOps.addNode(u, s), u = orderOps.insertNode(u, s.id, c ?? 0), l && (u = selectionOps.selectNodes(u, [s.id])), u;
-}, removeNodeIntent = (e, o) => {
-	let { nodeId: s } = o.payload;
-	if (!e.nodes.has(s)) return e;
-	let c = e;
-	return c = nodeOps.removeNode(c, s), c = orderOps.removeNode(c, s), c = selectionOps.deselectNodes(c, [s]), c;
-}, removeNodesIntent = (e, o) => {
-	let { nodeIds: s } = o.payload;
-	if (s.length === 0) return e;
-	let c = e;
-	return c = nodeOps.removeNodes(c, s), c = orderOps.removeNodes(c, s), c = selectionOps.deselectNodes(c, s), c;
-}, updateNodeIntent = (e, o) => {
-	let { nodeId: s, updates: c } = o.payload;
-	if (!e.nodes.has(s)) return e;
-	let l = e.nodes.get(s);
-	return !l || !Object.keys(c).some((e) => l[e] !== c[e]) ? e : nodeOps.updateNode(e, s, c);
-}, reorderNodeIntent = (e, o) => {
-	let { nodeId: s, toIndex: c } = o.payload, l = orderOps.reorderNode(e, s, c);
-	return l === e ? e : (l = selectionOps.deselectNodes(l, [s]), l);
-}, selectNodeIntent = (e, o) => {
-	let { nodeId: s } = o.payload;
-	return selectionOps.selectNodes(e, [s]);
-}, deselectNodesIntent = (e, o) => {
-	let { nodeIds: s } = o.payload;
-	return selectionOps.deselectNodes(e, s);
+}, addNodeIntent = (e, a) => {
+	let { node: o, index: s, select: c } = a.payload, l = e;
+	return l = nodeOps.addNode(l, o), l = orderOps.insertNode(l, o.id, s ?? 0), c && (l = selectionOps.selectNodes(l, [o.id])), l;
+}, removeNodeIntent = (e, a) => {
+	let { nodeId: o } = a.payload;
+	if (!e.nodes.has(o)) return e;
+	let s = e;
+	return s = nodeOps.removeNode(s, o), s = orderOps.removeNode(s, o), s = selectionOps.deselectNodes(s, [o]), s;
+}, removeNodesIntent = (e, a) => {
+	let { nodeIds: o } = a.payload;
+	if (o.length === 0) return e;
+	let s = e;
+	return s = nodeOps.removeNodes(s, o), s = orderOps.removeNodes(s, o), s = selectionOps.deselectNodes(s, o), s;
+}, updateNodeIntent = (e, a) => {
+	let { nodeId: o, updates: s } = a.payload;
+	if (!e.nodes.has(o)) return e;
+	let c = e.nodes.get(o);
+	return !c || !Object.keys(s).some((e) => c[e] !== s[e]) ? e : nodeOps.updateNode(e, o, s);
+}, reorderNodeIntent = (e, a) => {
+	let { nodeId: o, toIndex: s } = a.payload, c = orderOps.reorderNode(e, o, s);
+	return c === e ? e : (c = selectionOps.deselectNodes(c, [o]), c);
+}, selectNodeIntent = (e, a) => {
+	let { nodeId: o } = a.payload;
+	return selectionOps.selectNodes(e, [o]);
+}, deselectNodesIntent = (e, a) => {
+	let { nodeIds: o } = a.payload;
+	return selectionOps.deselectNodes(e, o);
 }, viewportOps = {
-	setZoom(e, o, s, c) {
-		if (o <= 0) return e;
-		let l = e.viewport;
-		if (c != null && s != null) {
-			let l = s.x - c.x / o, u = s.y - c.y / o;
+	setZoom(e, a, o, s) {
+		if (a <= 0) return e;
+		let c = e.viewport;
+		if (s != null && o != null) {
+			let c = o.x - s.x / a, l = o.y - s.y / a;
 			return {
 				...e,
 				viewport: {
-					scale: o,
+					scale: a,
+					x: c,
+					y: l
+				}
+			};
+		}
+		if (o) {
+			let s = a / c.scale, l = o.x - (o.x - c.x) * s, u = o.y - (o.y - c.y) * s;
+			return {
+				...e,
+				viewport: {
+					scale: a,
 					x: l,
 					y: u
 				}
 			};
 		}
-		if (s) {
-			let c = o / l.scale, u = s.x - (s.x - l.x) * c, d = s.y - (s.y - l.y) * c;
-			return {
-				...e,
-				viewport: {
-					scale: o,
-					x: u,
-					y: d
-				}
-			};
-		}
-		return {
-			...e,
-			viewport: {
-				...l,
-				scale: o
-			}
-		};
-	},
-	pan(e, o, s) {
-		let { viewport: c } = e;
 		return {
 			...e,
 			viewport: {
 				...c,
-				x: c.x + o,
-				y: c.y + s
+				scale: a
+			}
+		};
+	},
+	pan(e, a, o) {
+		let { viewport: s } = e;
+		return {
+			...e,
+			viewport: {
+				...s,
+				x: s.x + a,
+				y: s.y + o
 			}
 		};
 	}
@@ -250,13 +254,13 @@ const historyEngine = {
 	REORDER: reorderNodeIntent,
 	SELECT_NODE: selectNodeIntent,
 	DESELECT_NODES: deselectNodesIntent,
-	SET_ZOOM: (e, o) => {
-		let { scale: s, center: c, pointer: l } = o.payload;
-		return viewportOps.setZoom(e, s, c, l);
+	SET_ZOOM: (e, a) => {
+		let { scale: o, center: s, pointer: c } = a.payload;
+		return viewportOps.setZoom(e, o, s, c);
 	},
-	PAN_VIEWPORT: (e, o) => {
-		let { dx: s, dy: c } = o.payload;
-		return viewportOps.pan(e, s, c);
+	PAN_VIEWPORT: (e, a) => {
+		let { dx: o, dy: s } = a.payload;
+		return viewportOps.pan(e, o, s);
 	}
 };
 export { addNodeIntent, createEditorEngine, intentMap, nodeOps, orderOps, removeNodeIntent, reorderNodeIntent, selectNodeIntent, selectionOps, updateNodeIntent, viewportOps };

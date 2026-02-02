@@ -45,7 +45,7 @@ export interface Node {
 /**
  * Axis-aligned bounding box with rotation for a node.
  */
-interface Geometry {
+export interface Geometry {
     x: number;
     y: number;
     width: number;
