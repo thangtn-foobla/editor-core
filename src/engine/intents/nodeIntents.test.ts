@@ -85,6 +85,29 @@ describe('nodeIntents', () => {
       expect(result.order).toEqual(['node-2', 'node-1'])
     })
 
+    it('should add node to order with real-world payload (first node, empty order, index 0, select true)', () => {
+      const state = createInitialState()
+      expect(state.order).toEqual([])
+      const node = {
+        id: '1770107852552',
+        type: 'text' as const,
+        geometry: { x: 500, y: 500, width: 100, height: 50, rotation: 0 },
+        state: { hidden: false, locked: false },
+        style: { text: 'Hello, world!', fontSize: 60 }
+      }
+      const command: AddNodeCommand = {
+        type: 'ADD_NODE',
+        payload: { node, index: 0, select: true },
+        meta: { source: 'ui' }
+      }
+
+      const result = addNodeIntent(state, command)
+
+      expect(result.nodes.has('1770107852552')).toBe(true)
+      expect(result.order).toEqual(['1770107852552'])
+      expect(result.selection.nodeIds).toEqual(['1770107852552'])
+    })
+
     it('should select the node when select is true', () => {
       const state = createInitialState()
       const node = createNode('node-1')

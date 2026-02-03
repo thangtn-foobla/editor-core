@@ -1,44 +1,44 @@
-function replay(e, c, l) {
-	return c.reduce((e, c) => {
-		let u = l[c.type];
-		return u ? u(e, c) : e;
+function replay(e, o, s) {
+	return o.reduce((e, o) => {
+		let c = s[o.type];
+		return c ? c(e, o) : e;
 	}, e);
 }
-function undo(c, l, u) {
-	let { past: d, future: f } = c.history;
-	if (d.length === 0) return null;
-	let p = d.at(-1), m = d.slice(0, -1);
+function undo(o, s, c) {
+	let { past: l, future: u } = o.history;
+	if (l.length === 0) return null;
+	let d = l.at(-1), f = l.slice(0, -1);
 	return {
-		...replay(l, m, u),
+		...replay(s, f, c),
 		history: {
-			past: m,
-			future: p ? [p, ...f] : f
+			past: f,
+			future: d ? [d, ...u] : u
 		}
 	};
 }
-function redo(c, l, u) {
-	let { past: d, future: f } = c.history;
-	if (f.length === 0) return null;
-	let p = f[0], m = f.slice(1);
+function redo(o, s, c) {
+	let { past: l, future: u } = o.history;
+	if (u.length === 0) return null;
+	let d = u[0], f = u.slice(1);
 	return {
-		...replay(l, [...d, p], u),
+		...replay(s, [...l, d], c),
 		history: {
-			past: [...d, p],
-			future: m
+			past: [...l, d],
+			future: f
 		}
 	};
 }
 const historyEngine = {
 	undo,
 	redo
-}, historyOps = { record(e, c) {
-	let { past: l } = e;
+}, historyOps = { record(e, o) {
+	let { past: s } = e;
 	return {
 		...e,
-		past: [...l, c]
+		past: [...s, o]
 	};
 } }, createEditorEngine = (e) => {
-	let { initialState: c, intentMap: l } = e, f = c, p = /* @__PURE__ */ new Set();
+	let { initialState: o, intentMap: s, debug: u, logger: d } = e, f = o, p = /* @__PURE__ */ new Set();
 	function m() {
 		return f;
 	}
@@ -46,29 +46,29 @@ const historyEngine = {
 		for (let e of p) e(f);
 	}
 	function g(e) {
-		let c = l[e.type];
-		if (!c) throw Error(`No intent found for command type ${e.type}`);
-		let u = f, p = c(u, e);
-		if (p === u) return;
+		let o = s[e.type];
+		if (!o) throw Error(`No intent found for command type ${e.type}`);
+		let c = f, p = o(c, e);
+		if (p === c) return;
 		let m = e.meta?.recordHistory !== !1;
 		f = {
 			...p,
-			history: m ? historyOps.record(u.history, e) : u.history
-		}, h();
+			history: m ? historyOps.record(c.history, e) : c.history
+		}, u && d && d(f, e), h();
 	}
 	function _() {
-		let e = historyEngine.undo(f, c, l);
-		e && (f = e, h());
+		let e = historyEngine.undo(f, o, s);
+		e && (f = e, u && d && d(f, void 0), h());
 	}
 	function v() {
-		let e = historyEngine.redo(f, c, l);
-		e && (f = e, h());
+		let e = historyEngine.redo(f, o, s);
+		e && (f = e, u && d && d(f, void 0), h());
 	}
 	function y(e) {
 		return p.add(e), () => p.delete(e);
 	}
 	function b(e) {
-		f = e, h();
+		f = e, u && d && d(f, void 0), h();
 	}
 	return {
 		getState: m,
@@ -79,83 +79,94 @@ const historyEngine = {
 		replaceState: b
 	};
 }, nodeOps = {
-	addNode(e, c) {
-		if (e.nodes.has(c.id)) return e;
-		let l = new Map(e.nodes);
-		return l.set(c.id, c), {
+	addNode(e, o) {
+		if (e.nodes.has(o.id)) return e;
+		let s = new Map(e.nodes);
+		return s.set(o.id, o), {
 			...e,
-			nodes: l
+			nodes: s
 		};
 	},
-	removeNode(e, c) {
-		if (!e.nodes.has(c)) throw Error(`Node with id ${c} does not exist`);
-		let l = new Map(e.nodes);
-		return l.delete(c), {
+	removeNode(e, o) {
+		if (!e.nodes.has(o)) throw Error(`Node with id ${o} does not exist`);
+		let s = new Map(e.nodes);
+		return s.delete(o), {
 			...e,
-			nodes: l
+			nodes: s
 		};
 	},
-	removeNodes(e, c) {
-		let l = new Map(e.nodes);
-		return c.forEach((e) => {
-			l.delete(e);
+	removeNodes(e, o) {
+		let s = new Map(e.nodes);
+		return o.forEach((e) => {
+			s.delete(e);
 		}), {
 			...e,
-			nodes: l
+			nodes: s
 		};
 	},
-	updateNode(e, c, l) {
-		let u = e.nodes.get(c);
-		if (!u) throw Error(`Node with id ${c} does not exist`);
-		let d = {
-			...u,
-			...l
-		}, f = new Map(e.nodes);
-		return f.set(c, d), {
+	updateNode(e, o, s) {
+		let c = e.nodes.get(o);
+		if (!c) throw Error(`Node with id ${o} does not exist`);
+		let l = {
+			...c,
+			...s
+		}, u = new Map(e.nodes);
+		return u.set(o, l), {
 			...e,
-			nodes: f
+			nodes: u
 		};
 	}
 }, orderOps = {
-	insertNode(e, c, l) {
+	insertNode(e, o, s) {
+		let c = String(o);
 		if (e.order.includes(c)) return e;
-		let u = e.order, d = l ?? u.length, f = Math.max(0, Math.min(d, u.length)), p = u.slice();
-		return p.splice(f, 0, c), {
-			...e,
-			order: p
-		};
-	},
-	removeNode(e, c) {
-		let l = e.order.filter((e) => e !== c);
-		return {
-			...e,
-			order: l
-		};
-	},
-	removeNodes(e, c) {
-		if (c.length === 0) return {
-			...e,
-			order: [...e.order]
-		};
-		let l = new Set(c), u = e.order.filter((e) => !l.has(e));
-		return {
-			...e,
-			order: u
-		};
-	},
-	reorderNode(e, c, l) {
-		let u = e.order, d = u.indexOf(c);
-		if (d === -1) return e;
-		let f = u.slice();
-		f.splice(d, 1);
-		let p = Math.max(0, Math.min(l, u.length));
-		return f.splice(p, 0, c), {
+		let l = e.order, u = s ?? l.length, d = Math.max(0, Math.min(u, l.length)), f = l.slice();
+		return f.splice(d, 0, c), {
 			...e,
 			order: f
 		};
+	},
+	removeNode(e, o) {
+		let s = e.order.filter((e) => e !== o);
+		return {
+			...e,
+			order: s
+		};
+	},
+	removeNodes(e, o) {
+		if (o.length === 0) return {
+			...e,
+			order: [...e.order]
+		};
+		let s = new Set(o), c = e.order.filter((e) => !s.has(e));
+		return {
+			...e,
+			order: c
+		};
+	},
+	reorderNode(e, o, s) {
+		let c = e.order, l = c.indexOf(o);
+		if (l === -1) return e;
+		let u = c.slice();
+		u.splice(l, 1);
+		let d = Math.max(0, Math.min(s, c.length));
+		return u.splice(d, 0, o), {
+			...e,
+			order: u
+		};
 	}
 }, selectionOps = {
-	selectNodes(e, c) {
+	selectNodes(e, o) {
+		return {
+			...e,
+			selection: {
+				...e.selection,
+				nodeIds: o
+			}
+		};
+	},
+	deselectNodes(e, o) {
+		let s = new Set(o), c = (e.selection.nodeIds ?? []).filter((e) => !s.has(e));
 		return {
 			...e,
 			selection: {
@@ -163,86 +174,85 @@ const historyEngine = {
 				nodeIds: c
 			}
 		};
-	},
-	deselectNodes(e, c) {
-		let l = new Set(c), u = (e.selection.nodeIds ?? []).filter((e) => !l.has(e));
-		return {
-			...e,
-			selection: {
-				...e.selection,
-				nodeIds: u
-			}
+	}
+}, addNodeIntent = (e, o) => {
+	let { node: s, index: c, select: l } = o.payload, u = e;
+	u = nodeOps.addNode(u, s);
+	let f = String(s.id), m = u.order;
+	if (!m.includes(f)) {
+		let e = c ?? m.length, o = Math.max(0, Math.min(e, m.length)), s = m.slice();
+		s.splice(o, 0, f), u = {
+			...u,
+			order: s
 		};
 	}
-}, addNodeIntent = (e, c) => {
-	let { node: l, index: u, select: d } = c.payload, f = e;
-	return f = nodeOps.addNode(f, l), f = orderOps.insertNode(f, l.id, u ?? 0), d && (f = selectionOps.selectNodes(f, [l.id])), f;
-}, removeNodeIntent = (e, c) => {
-	let { nodeId: l } = c.payload;
-	if (!e.nodes.has(l)) return e;
-	let u = e;
-	return u = nodeOps.removeNode(u, l), u = orderOps.removeNode(u, l), u = selectionOps.deselectNodes(u, [l]), u;
-}, removeNodesIntent = (e, c) => {
-	let { nodeIds: l } = c.payload;
-	if (l.length === 0) return e;
-	let u = e;
-	return u = nodeOps.removeNodes(u, l), u = orderOps.removeNodes(u, l), u = selectionOps.deselectNodes(u, l), u;
-}, updateNodeIntent = (e, c) => {
-	let { nodeId: l, updates: u } = c.payload;
-	if (!e.nodes.has(l)) return e;
-	let d = e.nodes.get(l);
-	return !d || !Object.keys(u).some((e) => d[e] !== u[e]) ? e : nodeOps.updateNode(e, l, u);
-}, reorderNodeIntent = (e, c) => {
-	let { nodeId: l, toIndex: u } = c.payload, d = orderOps.reorderNode(e, l, u);
-	return d === e ? e : (d = selectionOps.deselectNodes(d, [l]), d);
-}, selectNodeIntent = (e, c) => {
-	let { nodeId: l } = c.payload;
-	return selectionOps.selectNodes(e, [l]);
-}, deselectNodesIntent = (e, c) => {
-	let { nodeIds: l } = c.payload;
-	return selectionOps.deselectNodes(e, l);
+	return l && (u = selectionOps.selectNodes(u, [s.id])), u;
+}, removeNodeIntent = (e, o) => {
+	let { nodeId: s } = o.payload;
+	if (!e.nodes.has(s)) return e;
+	let c = e;
+	return c = nodeOps.removeNode(c, s), c = orderOps.removeNode(c, s), c = selectionOps.deselectNodes(c, [s]), c;
+}, removeNodesIntent = (e, o) => {
+	let { nodeIds: s } = o.payload;
+	if (s.length === 0) return e;
+	let c = e;
+	return c = nodeOps.removeNodes(c, s), c = orderOps.removeNodes(c, s), c = selectionOps.deselectNodes(c, s), c;
+}, updateNodeIntent = (e, o) => {
+	let { nodeId: s, updates: c } = o.payload;
+	if (!e.nodes.has(s)) return e;
+	let l = e.nodes.get(s);
+	return !l || !Object.keys(c).some((e) => l[e] !== c[e]) ? e : nodeOps.updateNode(e, s, c);
+}, reorderNodeIntent = (e, o) => {
+	let { nodeId: s, toIndex: c } = o.payload, l = orderOps.reorderNode(e, s, c);
+	return l === e ? e : (l = selectionOps.deselectNodes(l, [s]), l);
+}, selectNodeIntent = (e, o) => {
+	let { nodeId: s } = o.payload;
+	return selectionOps.selectNodes(e, [s]);
+}, deselectNodesIntent = (e, o) => {
+	let { nodeIds: s } = o.payload;
+	return selectionOps.deselectNodes(e, s);
 }, viewportOps = {
-	setZoom(e, c, l, u) {
-		if (c <= 0) return e;
-		let d = e.viewport;
-		if (u != null && l != null) {
-			let d = l.x - u.x / c, f = l.y - u.y / c;
+	setZoom(e, o, s, c) {
+		if (o <= 0) return e;
+		let l = e.viewport;
+		if (c != null && s != null) {
+			let l = s.x - c.x / o, u = s.y - c.y / o;
 			return {
 				...e,
 				viewport: {
-					scale: c,
-					x: d,
-					y: f
+					scale: o,
+					x: l,
+					y: u
 				}
 			};
 		}
-		if (l) {
-			let u = c / d.scale, f = l.x - (l.x - d.x) * u, p = l.y - (l.y - d.y) * u;
+		if (s) {
+			let c = o / l.scale, u = s.x - (s.x - l.x) * c, d = s.y - (s.y - l.y) * c;
 			return {
 				...e,
 				viewport: {
-					scale: c,
-					x: f,
-					y: p
+					scale: o,
+					x: u,
+					y: d
 				}
 			};
 		}
 		return {
 			...e,
 			viewport: {
-				...d,
-				scale: c
+				...l,
+				scale: o
 			}
 		};
 	},
-	pan(e, c, l) {
-		let { viewport: u } = e;
+	pan(e, o, s) {
+		let { viewport: c } = e;
 		return {
 			...e,
 			viewport: {
-				...u,
-				x: u.x + c,
-				y: u.y + l
+				...c,
+				x: c.x + o,
+				y: c.y + s
 			}
 		};
 	}
@@ -254,13 +264,13 @@ const historyEngine = {
 	REORDER: reorderNodeIntent,
 	SELECT_NODE: selectNodeIntent,
 	DESELECT_NODES: deselectNodesIntent,
-	SET_ZOOM: (e, c) => {
-		let { scale: l, center: u, pointer: d } = c.payload;
-		return viewportOps.setZoom(e, l, u, d);
+	SET_ZOOM: (e, o) => {
+		let { scale: s, center: c, pointer: l } = o.payload;
+		return viewportOps.setZoom(e, s, c, l);
 	},
-	PAN_VIEWPORT: (e, c) => {
-		let { dx: l, dy: u } = c.payload;
-		return viewportOps.pan(e, l, u);
+	PAN_VIEWPORT: (e, o) => {
+		let { dx: s, dy: c } = o.payload;
+		return viewportOps.pan(e, s, c);
 	}
 };
 function serialize(e) {
@@ -277,23 +287,23 @@ function serialize(e) {
 		viewport: e.viewport
 	};
 }
-function deserialize(e, c) {
+function deserialize(e, o) {
 	if (e.version !== 1) throw Error("Unsupported document version");
-	let l = /* @__PURE__ */ new Map();
-	for (let c of e.nodes) l.set(c.id, {
-		id: c.id,
-		type: c.type,
-		geometry: c.geometry,
-		state: c.state,
-		style: c.style
+	let s = /* @__PURE__ */ new Map();
+	for (let o of e.nodes) s.set(o.id, {
+		id: o.id,
+		type: o.type,
+		geometry: o.geometry,
+		state: o.state,
+		style: o.style
 	});
 	return {
-		...c,
-		nodes: l,
+		...o,
+		nodes: s,
 		order: e.order,
-		viewport: e.viewport ? { ...e.viewport } : c.viewport,
+		viewport: e.viewport ? { ...e.viewport } : o.viewport,
 		selection: { nodeIds: [] },
-		history: c.history
+		history: o.history
 	};
 }
 function migrate(e) {

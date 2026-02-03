@@ -22,6 +22,12 @@ export type IntentMap = {
 export type Subscriber = (state: EditorState) => void
 
 /**
+ * Optional debug logger. When `debug` is true and this is provided, it is called
+ * on every state change. For dispatch: (state, command). For undo/redo/replaceState: (state).
+ */
+export type DebugLogger = (state: EditorState, command?: Command | null) => void
+
+/**
  * Configuration options for creating an `EditorEngine` instance.
  */
 export interface EngineOptions {
@@ -34,9 +40,13 @@ export interface EngineOptions {
    */
   intentMap: IntentMap
   /**
-   * Debug mode.
+   * Debug mode. When true and `logger` is provided, state changes are logged.
    */
   debug?: boolean
+  /**
+   * Optional logger (e.g. console.log in browser, vi.fn() in tests). Only used when debug is true.
+   */
+  logger?: DebugLogger
 }
 
 /**

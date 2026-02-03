@@ -8,7 +8,17 @@ export const addNodeIntent: IntentHandler<'ADD_NODE'> = (state, cmd) => {
 
   let next = state
   next = nodeOps.addNode(next, node)
-  next = orderOps.insertNode(next, node.id, index ?? 0)
+  // Always set order explicitly so the new node id is in order (avoids relying on
+  // insertNode when state.order might be shared/mutated elsewhere)
+  const id = String(node.id)
+  const currentOrder = next.order
+  if (!currentOrder.includes(id)) {
+    const idx = index ?? currentOrder.length
+    const clampedIdx = Math.max(0, Math.min(idx, currentOrder.length))
+    const newOrder = currentOrder.slice()
+    newOrder.splice(clampedIdx, 0, id)
+    next = { ...next, order: newOrder }
+  }
   if (select) {
     next = selectionOps.selectNodes(next, [node.id])
   }

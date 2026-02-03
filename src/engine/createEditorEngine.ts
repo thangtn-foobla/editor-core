@@ -13,7 +13,7 @@ import { historyOps } from './ops/historyOps'
  * dispatching commands and subscribing to changes.
  */
 export const createEditorEngine: CreateEditorEngine = options => {
-  const { initialState, intentMap } = options
+  const { initialState, intentMap, debug, logger } = options
   let state = initialState
   const subscribers = new Set<Subscriber>()
 
@@ -44,12 +44,14 @@ export const createEditorEngine: CreateEditorEngine = options => {
       ...next,
       history: shouldRecordHistory ? historyOps.record(prev.history, command) : prev.history
     }
+    if (debug && logger) logger(state, command)
     notify()
   }
   function undo() {
     const result = historyEngine.undo(state, initialState, intentMap)
     if (!result) return
     state = result
+    if (debug && logger) logger(state, undefined)
     notify()
   }
 
@@ -57,6 +59,7 @@ export const createEditorEngine: CreateEditorEngine = options => {
     const result = historyEngine.redo(state, initialState, intentMap)
     if (!result) return
     state = result
+    if (debug && logger) logger(state, undefined)
     notify()
   }
 
@@ -67,6 +70,7 @@ export const createEditorEngine: CreateEditorEngine = options => {
 
   function replaceState(nextState: EditorState) {
     state = nextState
+    if (debug && logger) logger(state, undefined)
     notify()
   }
 

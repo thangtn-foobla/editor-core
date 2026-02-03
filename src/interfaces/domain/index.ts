@@ -4,6 +4,7 @@ export type {
   IntentHandler,
   IntentMap,
   Subscriber,
+  DebugLogger,
   EngineOptions,
   EditorEngine,
   CreateEditorEngine,

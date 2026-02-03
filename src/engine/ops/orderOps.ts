@@ -22,15 +22,16 @@ export interface OrderOps {
 export const orderOps: OrderOps = {
 
   insertNode(state: EditorState, nodeId: NodeId, index?: number): EditorState {
-    // Avoid duplicate: if nodeId is already in order, do nothing (idempotent).
-    if (state.order.includes(nodeId)) {
+    const id = String(nodeId)
+    // Avoid duplicate: if id is already in order, do nothing (idempotent).
+    if (state.order.includes(id)) {
       return state
     }
     const nodeIds = state.order
     const idx = index ?? nodeIds.length
     const clampedIndex = Math.max(0, Math.min(idx, nodeIds.length))
     const newOrder = nodeIds.slice()
-    newOrder.splice(clampedIndex, 0, nodeId)
+    newOrder.splice(clampedIndex, 0, id)
     return {
       ...state,
       order: newOrder

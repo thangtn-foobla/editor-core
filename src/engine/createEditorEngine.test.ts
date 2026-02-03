@@ -60,6 +60,9 @@ describe('createEditorEngine', () => {
   describe('dispatch', () => {
     it('should dispatch an ADD_NODE command', () => {
       const node = createNode('node-1')
+      const orderBefore = engine.getState().order
+      expect(orderBefore).toEqual([])
+
       engine.dispatch({
         type: 'ADD_NODE',
         payload: { node },
@@ -69,6 +72,8 @@ describe('createEditorEngine', () => {
       const state = engine.getState()
       expect(state.nodes.has('node-1')).toBe(true)
       expect(state.nodes.get('node-1')).toEqual(node)
+      // addNodeIntent must add nodeId to state.order (via orderOps.insertNode)
+      expect(state.order).toEqual(['node-1'])
       expect(state.order).toContain('node-1')
     })
 
@@ -593,6 +598,104 @@ describe('createEditorEngine', () => {
       state = engine.getState()
       expect(state.nodes.size).toBe(1)
       expect(state.nodes.has('node-2')).toBe(true)
+    })
+  })
+
+  describe('debug logger', () => {
+    it('does not call logger when debug is false', () => {
+      const logger = vi.fn()
+      engine = createEditorEngine({
+        initialState,
+        intentMap,
+        debug: false,
+        logger
+      })
+      engine.dispatch({
+        type: 'ADD_NODE',
+        payload: { node: createNode('node-1') },
+        meta: { source: 'ui' }
+      })
+      expect(logger).not.toHaveBeenCalled()
+    })
+
+    it('does not call logger when logger is not provided', () => {
+      engine = createEditorEngine({
+        initialState,
+        intentMap,
+        debug: true
+      })
+      engine.dispatch({
+        type: 'ADD_NODE',
+        payload: { node: createNode('node-1') },
+        meta: { source: 'ui' }
+      })
+      // no throw, just no logging
+    })
+
+    it('calls logger(state, command) on dispatch when debug true and logger provided', () => {
+      const logger = vi.fn()
+      engine = createEditorEngine({
+        initialState,
+        intentMap,
+        debug: true,
+        logger
+      })
+      const cmd = {
+        type: 'ADD_NODE' as const,
+        payload: { node: createNode('node-1') },
+        meta: { source: 'ui' as const }
+      }
+      engine.dispatch(cmd)
+      expect(logger).toHaveBeenCalledTimes(1)
+      expect(logger).toHaveBeenCalledWith(
+        expect.objectContaining({ order: ['node-1'] }),
+        cmd
+      )
+    })
+
+    it('calls logger(state) on undo when debug true and logger provided', () => {
+      const logger = vi.fn()
+      engine = createEditorEngine({
+        initialState,
+        intentMap,
+        debug: true,
+        logger
+      })
+      engine.dispatch({
+        type: 'ADD_NODE',
+        payload: { node: createNode('node-1') },
+        meta: { source: 'ui' }
+      })
+      logger.mockClear()
+      engine.undo()
+      expect(logger).toHaveBeenCalledTimes(1)
+      expect(logger).toHaveBeenCalledWith(
+        expect.objectContaining({ order: [] }),
+        undefined
+      )
+    })
+
+    it('calls logger(state) on redo when debug true and logger provided', () => {
+      const logger = vi.fn()
+      engine = createEditorEngine({
+        initialState,
+        intentMap,
+        debug: true,
+        logger
+      })
+      engine.dispatch({
+        type: 'ADD_NODE',
+        payload: { node: createNode('node-1') },
+        meta: { source: 'ui' }
+      })
+      engine.undo()
+      logger.mockClear()
+      engine.redo()
+      expect(logger).toHaveBeenCalledTimes(1)
+      expect(logger).toHaveBeenCalledWith(
+        expect.objectContaining({ order: ['node-1'] }),
+        undefined
+      )
     })
   })
 })
