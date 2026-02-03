@@ -3,6 +3,10 @@ import type { EditorState } from '../../interfaces/domain/EditorState'
 
 
 type NodeId = Node['id']
+
+/**
+ * Pure operations that update the current selection.
+ */
 export interface SelectionOps {
   selectNodes(state: EditorState, nodeIds: NodeId[]): EditorState
 
@@ -11,6 +15,7 @@ export interface SelectionOps {
   // clearSelection(state: EditorState): EditorState
 }
 
+/** Default implementation of selection operations. */
 export const selectionOps: SelectionOps = {
   selectNodes(state: EditorState, nodeIds: NodeId[]): EditorState {
     return {

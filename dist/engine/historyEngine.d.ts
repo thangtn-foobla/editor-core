@@ -2,6 +2,9 @@ import type { IntentMap } from '../interfaces/domain/Engine';
 import type { EditorState } from '../interfaces/domain/EditorState';
 declare function undo(state: EditorState, initial: EditorState, intentMap: IntentMap): EditorState | null;
 declare function redo(state: EditorState, initial: EditorState, intentMap: IntentMap): EditorState | null;
+/**
+ * Undo/redo logic: replays commands from initial state and updates history stacks.
+ */
 export declare const historyEngine: {
     undo: typeof undo;
     redo: typeof redo;

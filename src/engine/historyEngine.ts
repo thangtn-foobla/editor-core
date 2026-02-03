@@ -54,6 +54,9 @@ function redo(
   }
 }
 
+/**
+ * Undo/redo logic: replays commands from initial state and updates history stacks.
+ */
 export const historyEngine = {
   undo,
   redo

@@ -3,6 +3,9 @@ import type { Node } from '../../interfaces/domain/Node'
 
 type NodeId = Node['id']
 
+/**
+ * Pure operations on editor state for adding, removing and updating nodes.
+ */
 export interface NodeOps {
   addNode(state: EditorState, node: Node): EditorState
 
@@ -17,6 +20,7 @@ export interface NodeOps {
   ): EditorState
 }
 
+/** Default implementation of node operations. */
 export const nodeOps: NodeOps = {
   addNode(state: EditorState, node: Node): EditorState {
     if (state.nodes.has(node.id)) {

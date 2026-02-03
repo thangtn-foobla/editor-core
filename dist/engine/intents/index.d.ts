@@ -1,6 +1,7 @@
 import { addNodeIntent, removeNodeIntent, updateNodeIntent } from './nodeIntents';
 import { reorderNodeIntent } from './orderIntents';
 import { selectNodeIntent } from './selectionIntents';
+/** Map from command type to intent handler. Used by createEditorEngine. */
 export declare const intentMap: {
     ADD_NODE: import("../../interfaces/domain").IntentHandler<"ADD_NODE">;
     REMOVE_NODE: import("../../interfaces/domain").IntentHandler<"REMOVE_NODE">;

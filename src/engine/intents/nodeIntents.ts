@@ -3,6 +3,7 @@ import { orderOps } from '../ops/orderOps'
 import { selectionOps } from '../ops/selectionOps'
 import type { IntentHandler } from '../../interfaces/domain/Engine'
 
+/** Intent handler for adding a node to the document. */
 export const addNodeIntent: IntentHandler<'ADD_NODE'> = (state, cmd) => {
   const { node, index, select } = cmd.payload
 
@@ -25,6 +26,7 @@ export const addNodeIntent: IntentHandler<'ADD_NODE'> = (state, cmd) => {
   return next
 }
 
+/** Intent handler for removing a single node. */
 export const removeNodeIntent: IntentHandler<'REMOVE_NODE'> = (state, cmd) => {
   const { nodeId } = cmd.payload
   if (!state.nodes.has(nodeId)) {
@@ -35,9 +37,9 @@ export const removeNodeIntent: IntentHandler<'REMOVE_NODE'> = (state, cmd) => {
   next = orderOps.removeNode(next, nodeId)
   next = selectionOps.deselectNodes(next, [nodeId])
   return next
-
 }
 
+/** Intent handler for removing multiple nodes. */
 export const removeNodesIntent: IntentHandler<'REMOVE_NODES'> = (state, cmd) => {
   const { nodeIds } = cmd.payload
   if (nodeIds.length === 0) {
@@ -50,6 +52,7 @@ export const removeNodesIntent: IntentHandler<'REMOVE_NODES'> = (state, cmd) => 
   return next
 }
 
+/** Intent handler for applying partial updates to a node. */
 export const updateNodeIntent: IntentHandler<'UPDATE_NODE'> = (state, cmd) => {
   const { nodeId, updates } = cmd.payload
   if (!state.nodes.has(nodeId)) {

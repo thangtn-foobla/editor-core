@@ -5,6 +5,7 @@ import { reorderNodeIntent } from './orderIntents'
 import { deselectNodesIntent, selectNodeIntent } from './selectionIntents'
 import { panIntent, zoomIntent } from './zoomIntents'
 
+/** Map from command type to intent handler. Used by createEditorEngine. */
 export const intentMap = {
   ADD_NODE: addNodeIntent,
   REMOVE_NODE: removeNodeIntent,
