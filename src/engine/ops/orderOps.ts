@@ -21,13 +21,16 @@ export interface OrderOps {
 
 export const orderOps: OrderOps = {
 
-  insertNode(state: EditorState, nodeId: NodeId, index: number): EditorState {
-    if (state.nodes.has(nodeId)) {
+  insertNode(state: EditorState, nodeId: NodeId, index?: number): EditorState {
+    // Avoid duplicate: if nodeId is already in order, do nothing (idempotent).
+    if (state.order.includes(nodeId)) {
       return state
     }
     const nodeIds = state.order
+    const idx = index ?? nodeIds.length
+    const clampedIndex = Math.max(0, Math.min(idx, nodeIds.length))
     const newOrder = nodeIds.slice()
-    newOrder.splice(index, 0, nodeId)
+    newOrder.splice(clampedIndex, 0, nodeId)
     return {
       ...state,
       order: newOrder

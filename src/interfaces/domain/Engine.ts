@@ -33,6 +33,10 @@ export interface EngineOptions {
    * Lookup table mapping command types to intent handlers.
    */
   intentMap: IntentMap
+  /**
+   * Debug mode.
+   */
+  debug?: boolean
 }
 
 /**
@@ -60,6 +64,11 @@ export interface EditorEngine {
    */
   subscribe(listener: Subscriber): () => void
   // notify(): void
+
+  /**
+  * Replace the current state with a new one.
+  */
+  replaceState(nextState: EditorState): void
 }
 
 /**

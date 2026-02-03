@@ -28,6 +28,10 @@ export interface EngineOptions {
      * Lookup table mapping command types to intent handlers.
      */
     intentMap: IntentMap;
+    /**
+     * Debug mode.
+     */
+    debug?: boolean;
 }
 /**
  * Public interface of the editor engine.
@@ -53,6 +57,10 @@ export interface EditorEngine {
      * Subscribes to state changes. Returns an unsubscribe function.
      */
     subscribe(listener: Subscriber): () => void;
+    /**
+    * Replace the current state with a new one.
+    */
+    replaceState(nextState: EditorState): void;
 }
 /**
  * Factory function that creates a new `EditorEngine` instance.

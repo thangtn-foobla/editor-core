@@ -118,11 +118,11 @@ const historyEngine = {
 	}
 }, orderOps = {
 	insertNode(e, c, l) {
-		if (e.nodes.has(c)) return e;
-		let u = e.order.slice();
-		return u.splice(l, 0, c), {
+		if (e.order.includes(c)) return e;
+		let u = e.order, d = l ?? u.length, f = Math.max(0, Math.min(d, u.length)), p = u.slice();
+		return p.splice(f, 0, c), {
 			...e,
-			order: u
+			order: p
 		};
 	},
 	removeNode(e, c) {

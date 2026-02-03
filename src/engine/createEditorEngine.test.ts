@@ -69,9 +69,7 @@ describe('createEditorEngine', () => {
       const state = engine.getState()
       expect(state.nodes.has('node-1')).toBe(true)
       expect(state.nodes.get('node-1')).toEqual(node)
-      // Note: insertNode has a bug - it checks if node exists in nodes and returns same state
-      // So order won't be updated by addNodeIntent
-      expect(state.order).not.toContain('node-1')
+      expect(state.order).toContain('node-1')
     })
 
     it('should dispatch a REMOVE_NODE command', () => {
@@ -431,8 +429,7 @@ describe('createEditorEngine', () => {
 
       const state = engine.getState()
       expect(state.nodes.has('node-1')).toBe(true)
-      // Note: order won't contain node-1 due to insertNode bug
-      expect(state.order).not.toContain('node-1')
+      expect(state.order).toContain('node-1')
     })
 
     it('should not redo if there is no future history', () => {

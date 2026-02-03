@@ -62,10 +62,7 @@ describe('nodeIntents', () => {
 
       const result = addNodeIntent(state, command)
 
-      // Note: insertNode checks if node exists in nodes, and since addNode runs first,
-      // the node will exist, so insertNode returns the same state. This appears to be a bug.
-      // The order will remain empty because insertNode doesn't actually insert.
-      expect(result.order).toEqual([])
+      expect(result.order).toEqual(['node-1'])
     })
 
     it('should add node to order at specified index', () => {
@@ -85,9 +82,7 @@ describe('nodeIntents', () => {
       }
       result = addNodeIntent(result, command)
 
-      // Note: insertNode checks if node exists in nodes first, so it won't insert
-      // This appears to be a bug in the implementation
-      expect(result.order).toEqual([])
+      expect(result.order).toEqual(['node-2', 'node-1'])
     })
 
     it('should select the node when select is true', () => {
