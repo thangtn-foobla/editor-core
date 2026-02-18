@@ -7,6 +7,7 @@ function createNode(id: string): Node {
   return {
     id,
     type: 'text',
+    content: { text: '' },
     geometry: { x: 0, y: 0, width: 100, height: 50, rotation: 0 },
     state: { hidden: false, locked: false },
     style: {}

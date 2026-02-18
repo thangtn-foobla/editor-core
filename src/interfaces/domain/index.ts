@@ -10,6 +10,6 @@ export type {
   CreateEditorEngine,
 } from './Engine'
 export type { HistoryState } from './History'
-export type { Node } from './Node'
+export type { Node, TextNode, ImageNode, Geometry, NodeId, NodeState } from './Node'
 export type { Selection } from './Selection'
 

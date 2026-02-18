@@ -79,6 +79,18 @@ export interface UpdateNodeCommand extends BaseCommand {
 }
 
 /**
+ * Command for updating the text content of a text node.
+ * Only applies to nodes with type === 'text'.
+ */
+export interface UpdateTextCommand extends BaseCommand {
+  type: 'UPDATE_TEXT';
+  payload: {
+    nodeId: Node['id'];
+    text: string;
+  };
+}
+
+/**
  * Command for reordering a node within the stacking order.
  */
 export interface ReorderCommand extends BaseCommand {
@@ -132,7 +144,7 @@ export interface PanViewportCommand extends BaseCommand {
 /**
  * All commands that operate directly on nodes.
  */
-export type NodeCommand = AddNodeCommand | RemoveNodeCommand | RemoveNodesCommand | UpdateNodeCommand
+export type NodeCommand = AddNodeCommand | RemoveNodeCommand | RemoveNodesCommand | UpdateNodeCommand | UpdateTextCommand
 
 /**
  * All commands that affect node ordering.

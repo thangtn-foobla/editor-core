@@ -18,5 +18,6 @@ export interface SerializableNode {
   type: string
   geometry: Node['geometry']
   state: Node['state']
-  style: Node['style']
+  style: Record<string, any>
+  content?: Record<string, any>
 }

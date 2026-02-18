@@ -7,10 +7,11 @@ function createNode(id: string, type: 'text' | 'image' = 'text'): Node {
   return {
     id,
     type,
+    content: type === 'text' ? { text: '' } : { src: '' },
     geometry: { x: 0, y: 0, width: 100, height: 50, rotation: 0 },
     state: { hidden: false, locked: false },
     style: {}
-  }
+  } as Node
 }
 
 function createInitialState(): EditorState {

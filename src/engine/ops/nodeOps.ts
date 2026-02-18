@@ -70,7 +70,7 @@ export const nodeOps: NodeOps = {
       throw new Error(`Node with id ${nodeId} does not exist`)
     }
 
-    const updatedNode = { ...existingNode, ...updates }
+    const updatedNode = { ...existingNode, ...updates } as Node
     const nodes = new Map(state.nodes)
     nodes.set(nodeId, updatedNode)
 

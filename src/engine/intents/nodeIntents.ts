@@ -2,6 +2,7 @@ import { nodeOps } from '../ops/nodeOps'
 import { orderOps } from '../ops/orderOps'
 import { selectionOps } from '../ops/selectionOps'
 import type { IntentHandler } from '../../interfaces/domain/Engine'
+import type { TextNode } from '../../interfaces/domain/Node'
 
 /** Intent handler for adding a node to the document. */
 export const addNodeIntent: IntentHandler<'ADD_NODE'> = (state, cmd) => {
@@ -71,4 +72,21 @@ export const updateNodeIntent: IntentHandler<'UPDATE_NODE'> = (state, cmd) => {
   return nodeOps.updateNode(state, nodeId, updates)
 }
 
+/** Intent handler for updating text content on a text node. */
+export const updateTextIntent: IntentHandler<'UPDATE_TEXT'> = (state, cmd) => {
+  const node = state.nodes.get(cmd.payload.nodeId)
+  if (!node || node.type !== 'text') return state
 
+  const textNode = node as TextNode
+  if (textNode.content.text === cmd.payload.text) return state
+
+  const updated: TextNode = {
+    ...textNode,
+    content: {
+      ...textNode.content,
+      text: cmd.payload.text,
+    },
+  }
+
+  return nodeOps.updateNode(state, node.id, updated)
+}

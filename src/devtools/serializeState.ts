@@ -15,7 +15,8 @@ export function serializeState(state: EditorState): EditorStateSnapshot {
       type: node.type,
       geometry: node.geometry,
       state: node.state,
-      style: node.style ? { ...node.style } : {}
+      style: node.style ? { ...node.style } : {},
+      content: 'content' in node ? { ...node.content } : undefined
     })),
     order: [...state.order],
     viewport: { ...state.viewport },

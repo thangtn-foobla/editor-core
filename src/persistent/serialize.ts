@@ -6,13 +6,14 @@ import { SerializableDocument } from "../interfaces/SerializableDocument"
  */
 export function serialize(state: EditorState): SerializableDocument {
   return {
-    version: 1,
+    version: 2,
     nodes: Array.from(state.nodes.values()).map(node => ({
       id: node.id,
       type: node.type,
       geometry: node.geometry,
       state: node.state,
-      style: node.style ? { ...node.style } : {}
+      style: node.style ? { ...node.style } : {},
+      content: 'content' in node ? { ...node.content } : undefined
     })),
     order: state.order,
     viewport: state.viewport

@@ -18,10 +18,11 @@ function createNode(id: string, type: 'text' | 'image' = 'text'): Node {
   return {
     id,
     type,
+    content: type === 'text' ? { text: '' } : { src: '' },
     geometry: { x: 0, y: 0, width: 100, height: 50, rotation: 0 },
     state: { hidden: false, locked: false },
     style: {}
-  }
+  } as Node
 }
 
 function createInitialState(): EditorState {
@@ -91,9 +92,10 @@ describe('nodeIntents', () => {
       const node = {
         id: '1770107852552',
         type: 'text' as const,
+        content: { text: 'Hello, world!' },
         geometry: { x: 500, y: 500, width: 100, height: 50, rotation: 0 },
         state: { hidden: false, locked: false },
-        style: { text: 'Hello, world!', fontSize: 60 }
+        style: { fontSize: 60 }
       }
       const command: AddNodeCommand = {
         type: 'ADD_NODE',

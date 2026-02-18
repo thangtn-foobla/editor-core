@@ -1,50 +1,14 @@
-type TextNode = 'text'
-type ImageNode = 'image'
-
-/**
- * All supported node types in the editor.
- */
-type NodeType = TextNode | ImageNode
-
 /**
  * Unique identifier for a node.
  */
-type NodeId = string
+export type NodeId = string
 
 /**
  * Internal flags that control node visibility and locking.
  */
-type NodeState = {
+export type NodeState = {
   hidden: boolean
   locked: boolean
-}
-
-/**
- * Public representation of a node in the editor.
- */
-export interface Node {
-  /**
-   * Unique identifier for this node.
-   */
-  id: NodeId
-  /**
-    * Type of node (e.g. text, image).
-    */
-  type: NodeType
-  /**
-   * Position, size and rotation of the node.
-   */
-  geometry: Geometry
-  /**
-   * State flags such as visibility and lock status.
-   */
-  state: NodeState
-  /**
-   * Free-form style information, typically mapped to rendering.
-   */
-  style: {
-    [key: string]: any
-  }
 }
 
 /**
@@ -57,3 +21,58 @@ export interface Geometry {
   height: number
   rotation: number
 }
+
+/**
+ * Shared properties across all node types.
+ */
+interface BaseNode {
+  id: NodeId
+  geometry: Geometry
+  state: NodeState
+}
+
+/**
+ * A text node whose semantic content lives in `content.text`.
+ * Visual appearance (font, color, alignment) lives in `style`.
+ */
+export interface TextNode extends BaseNode {
+  type: 'text'
+  content: {
+    text: string
+  }
+  style: {
+    fontFamily?: string
+    fontSize?: number
+    fontWeight?: string
+    fill?: string
+    align?: string
+    [key: string]: any
+  }
+}
+
+/**
+ * An image node whose source lives in `content.src`.
+ * Visual appearance (opacity, filters) lives in `style`.
+ */
+export interface ImageNode extends BaseNode {
+  type: 'image'
+  content: {
+    src: string
+  }
+  style: {
+    opacity?: number
+    [key: string]: any
+  }
+}
+
+/**
+ * Discriminated union of all supported node types.
+ * Use `node.type` to narrow:
+ *
+ * ```ts
+ * if (node.type === 'text') {
+ *   node.content.text // safe
+ * }
+ * ```
+ */
+export type Node = TextNode | ImageNode

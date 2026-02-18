@@ -1,6 +1,6 @@
 import type { IntentMap } from '../../interfaces/domain/Engine'
 
-import { addNodeIntent, removeNodeIntent, removeNodesIntent, updateNodeIntent } from './nodeIntents'
+import { addNodeIntent, removeNodeIntent, removeNodesIntent, updateNodeIntent, updateTextIntent } from './nodeIntents'
 import { reorderNodeIntent } from './orderIntents'
 import { deselectNodesIntent, selectNodeIntent } from './selectionIntents'
 import { panIntent, zoomIntent } from './zoomIntents'
@@ -11,6 +11,7 @@ export const intentMap = {
   REMOVE_NODE: removeNodeIntent,
   REMOVE_NODES: removeNodesIntent,
   UPDATE_NODE: updateNodeIntent,
+  UPDATE_TEXT: updateTextIntent,
   REORDER: reorderNodeIntent,
   SELECT_NODE: selectNodeIntent,
   DESELECT_NODES: deselectNodesIntent,
@@ -18,4 +19,4 @@ export const intentMap = {
   PAN_VIEWPORT: panIntent,
 } satisfies IntentMap
 
-export { addNodeIntent, removeNodeIntent, updateNodeIntent, reorderNodeIntent, selectNodeIntent }
+export { addNodeIntent, removeNodeIntent, updateNodeIntent, updateTextIntent, reorderNodeIntent, selectNodeIntent }
