@@ -18,6 +18,11 @@ export interface NodeOps {
     nodeId: NodeId,
     updates: Partial<Node>
   ): EditorState
+
+  updateNodes(
+    state: EditorState,
+    entries: Array<{ nodeId: NodeId; updates: Partial<Node> }>
+  ): EditorState
 }
 
 /** Default implementation of node operations. */
@@ -78,5 +83,18 @@ export const nodeOps: NodeOps = {
       ...state,
       nodes
     }
+  },
+
+  updateNodes(
+    state: EditorState,
+    entries: Array<{ nodeId: NodeId; updates: Partial<Node> }>
+  ): EditorState {
+    const nodes = new Map(state.nodes)
+    for (const { nodeId, updates } of entries) {
+      const existingNode = nodes.get(nodeId)
+      if (!existingNode) continue
+      nodes.set(nodeId, { ...existingNode, ...updates } as Node)
+    }
+    return { ...state, nodes }
   }
 }

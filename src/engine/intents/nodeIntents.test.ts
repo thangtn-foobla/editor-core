@@ -3,7 +3,8 @@ import {
   addNodeIntent,
   removeNodeIntent,
   removeNodesIntent,
-  updateNodeIntent
+  updateNodeIntent,
+  updateNodesIntent
 } from './nodeIntents'
 import type { EditorState } from '../../interfaces/domain/EditorState'
 import type { Node } from '../../interfaces/domain/Node'
@@ -11,7 +12,8 @@ import type {
   AddNodeCommand,
   RemoveNodeCommand,
   RemoveNodesCommand,
-  UpdateNodeCommand
+  UpdateNodeCommand,
+  UpdateNodesCommand
 } from '../../interfaces/domain/Command'
 
 function createNode(id: string, type: 'text' | 'image' = 'text'): Node {
@@ -467,6 +469,88 @@ describe('nodeIntents', () => {
       })
 
       expect(stateWithNode.nodes.get('node-1')?.state.hidden).toBe(false)
+    })
+  })
+
+  describe('updateNodesIntent', () => {
+    function setupStateWithNodes(nodeIds: string[]): EditorState {
+      let state = createInitialState()
+      nodeIds.forEach(id => {
+        state = addNodeIntent(state, {
+          type: 'ADD_NODE',
+          payload: { node: createNode(id) },
+          meta: { source: 'ui' }
+        })
+      })
+      return state
+    }
+
+    it('should update multiple nodes at once', () => {
+      const state = setupStateWithNodes(['node-1', 'node-2'])
+      const command: UpdateNodesCommand = {
+        type: 'UPDATE_NODES',
+        payload: {
+          entries: [
+            { nodeId: 'node-1', updates: { state: { hidden: true, locked: false } } },
+            { nodeId: 'node-2', updates: { geometry: { x: 50, y: 50, width: 100, height: 50, rotation: 0 } } }
+          ]
+        },
+        meta: { source: 'ui' }
+      }
+
+      const result = updateNodesIntent(state, command)
+
+      expect(result.nodes.get('node-1')?.state.hidden).toBe(true)
+      expect(result.nodes.get('node-2')?.geometry.x).toBe(50)
+    })
+
+    it('should return the same state when entries is empty', () => {
+      const state = setupStateWithNodes(['node-1'])
+      const command: UpdateNodesCommand = {
+        type: 'UPDATE_NODES',
+        payload: { entries: [] },
+        meta: { source: 'ui' }
+      }
+
+      const result = updateNodesIntent(state, command)
+
+      expect(result).toBe(state)
+    })
+
+    it('should skip non-existent nodes', () => {
+      const state = setupStateWithNodes(['node-1'])
+      const command: UpdateNodesCommand = {
+        type: 'UPDATE_NODES',
+        payload: {
+          entries: [
+            { nodeId: 'node-1', updates: { state: { hidden: true, locked: false } } },
+            { nodeId: 'non-existent', updates: { state: { hidden: true, locked: false } } }
+          ]
+        },
+        meta: { source: 'ui' }
+      }
+
+      const result = updateNodesIntent(state, command)
+
+      expect(result.nodes.get('node-1')?.state.hidden).toBe(true)
+      expect(result.nodes.has('non-existent')).toBe(false)
+    })
+
+    it('should not modify the original state', () => {
+      const state = setupStateWithNodes(['node-1'])
+      const command: UpdateNodesCommand = {
+        type: 'UPDATE_NODES',
+        payload: {
+          entries: [
+            { nodeId: 'node-1', updates: { state: { hidden: true, locked: false } } }
+          ]
+        },
+        meta: { source: 'ui' }
+      }
+
+      updateNodesIntent(state, command)
+
+      expect(state.nodes.get('node-1')?.state.hidden).toBe(false)
     })
   })
 })

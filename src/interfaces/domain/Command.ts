@@ -79,6 +79,16 @@ export interface UpdateNodeCommand extends BaseCommand {
 }
 
 /**
+ * Command for applying partial updates to multiple nodes at once.
+ */
+export interface UpdateNodesCommand extends BaseCommand {
+  type: 'UPDATE_NODES';
+  payload: {
+    entries: Array<{ nodeId: Node['id']; updates: Partial<Node> }>;
+  };
+}
+
+/**
  * Command for updating the text content of a text node.
  * Only applies to nodes with type === 'text'.
  */
@@ -144,7 +154,7 @@ export interface PanViewportCommand extends BaseCommand {
 /**
  * All commands that operate directly on nodes.
  */
-export type NodeCommand = AddNodeCommand | RemoveNodeCommand | RemoveNodesCommand | UpdateNodeCommand | UpdateTextCommand
+export type NodeCommand = AddNodeCommand | RemoveNodeCommand | RemoveNodesCommand | UpdateNodeCommand | UpdateNodesCommand | UpdateTextCommand
 
 /**
  * All commands that affect node ordering.

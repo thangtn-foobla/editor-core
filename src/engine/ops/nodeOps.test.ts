@@ -256,4 +256,58 @@ describe('nodeOps', () => {
       expect(stateWithNode.nodes.get('node-1')?.state.hidden).toBe(false)
     })
   })
+
+  describe('updateNodes', () => {
+    it('should update multiple nodes at once', () => {
+      const state = createInitialState()
+      const node1 = createNode('node-1')
+      const node2 = createNode('node-2')
+      let result = nodeOps.addNode(state, node1)
+      result = nodeOps.addNode(result, node2)
+
+      const after = nodeOps.updateNodes(result, [
+        { nodeId: 'node-1', updates: { geometry: { x: 10, y: 20, width: 100, height: 50, rotation: 0 } } },
+        { nodeId: 'node-2', updates: { state: { hidden: true, locked: false } } }
+      ])
+
+      expect(after.nodes.get('node-1')?.geometry.x).toBe(10)
+      expect(after.nodes.get('node-2')?.state.hidden).toBe(true)
+    })
+
+    it('should skip non-existent nodeIds', () => {
+      const state = createInitialState()
+      const node1 = createNode('node-1')
+      const result = nodeOps.addNode(state, node1)
+
+      const after = nodeOps.updateNodes(result, [
+        { nodeId: 'node-1', updates: { state: { hidden: true, locked: false } } },
+        { nodeId: 'non-existent', updates: { state: { hidden: true, locked: false } } }
+      ])
+
+      expect(after.nodes.get('node-1')?.state.hidden).toBe(true)
+      expect(after.nodes.has('non-existent')).toBe(false)
+    })
+
+    it('should return new state even with empty entries', () => {
+      const state = createInitialState()
+      const node1 = createNode('node-1')
+      const result = nodeOps.addNode(state, node1)
+
+      const after = nodeOps.updateNodes(result, [])
+
+      expect(after.nodes.size).toBe(1)
+    })
+
+    it('should not modify the original state', () => {
+      const state = createInitialState()
+      const node1 = createNode('node-1')
+      const result = nodeOps.addNode(state, node1)
+
+      nodeOps.updateNodes(result, [
+        { nodeId: 'node-1', updates: { state: { hidden: true, locked: false } } }
+      ])
+
+      expect(result.nodes.get('node-1')?.state.hidden).toBe(false)
+    })
+  })
 })

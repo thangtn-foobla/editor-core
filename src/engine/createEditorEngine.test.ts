@@ -118,6 +118,88 @@ describe('createEditorEngine', () => {
       expect(state.nodes.get('node-1')?.state.hidden).toBe(true)
     })
 
+    it('should dispatch an UPDATE_NODES command to batch update multiple nodes', () => {
+      engine.dispatch({
+        type: 'ADD_NODE',
+        payload: { node: createNode('node-1') },
+        meta: { source: 'ui' }
+      })
+      engine.dispatch({
+        type: 'ADD_NODE',
+        payload: { node: createNode('node-2') },
+        meta: { source: 'ui' }
+      })
+
+      engine.dispatch({
+        type: 'UPDATE_NODES',
+        payload: {
+          entries: [
+            { nodeId: 'node-1', updates: { state: { hidden: true, locked: false } } },
+            { nodeId: 'node-2', updates: { geometry: { x: 50, y: 50, width: 100, height: 50, rotation: 0 } } }
+          ]
+        },
+        meta: { source: 'ui' }
+      })
+
+      const state = engine.getState()
+      expect(state.nodes.get('node-1')?.state.hidden).toBe(true)
+      expect(state.nodes.get('node-2')?.geometry.x).toBe(50)
+    })
+
+    it('should record a single history entry for UPDATE_NODES batch', () => {
+      engine.dispatch({
+        type: 'ADD_NODE',
+        payload: { node: createNode('node-1') },
+        meta: { source: 'ui' }
+      })
+      engine.dispatch({
+        type: 'ADD_NODE',
+        payload: { node: createNode('node-2') },
+        meta: { source: 'ui' }
+      })
+
+      const historyBefore = engine.getState().history.past.length
+
+      engine.dispatch({
+        type: 'UPDATE_NODES',
+        payload: {
+          entries: [
+            { nodeId: 'node-1', updates: { state: { hidden: true, locked: false } } },
+            { nodeId: 'node-2', updates: { state: { hidden: true, locked: false } } }
+          ]
+        },
+        meta: { source: 'ui' }
+      })
+
+      const historyAfter = engine.getState().history.past.length
+      expect(historyAfter).toBe(historyBefore + 1)
+      expect(engine.getState().history.past[historyAfter - 1].type).toBe('UPDATE_NODES')
+    })
+
+    it('should not record history for UPDATE_NODES when recordHistory is false', () => {
+      engine.dispatch({
+        type: 'ADD_NODE',
+        payload: { node: createNode('node-1') },
+        meta: { source: 'ui' }
+      })
+
+      const historyBefore = engine.getState().history.past.length
+
+      engine.dispatch({
+        type: 'UPDATE_NODES',
+        payload: {
+          entries: [
+            { nodeId: 'node-1', updates: { state: { hidden: true, locked: false } } }
+          ]
+        },
+        meta: { source: 'ui', recordHistory: false }
+      })
+
+      expect(engine.getState().history.past.length).toBe(historyBefore)
+      // But the update should still be applied
+      expect(engine.getState().nodes.get('node-1')?.state.hidden).toBe(true)
+    })
+
     it('should dispatch a REORDER command', () => {
       const node1 = createNode('node-1')
       const node2 = createNode('node-2')

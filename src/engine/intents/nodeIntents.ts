@@ -72,6 +72,15 @@ export const updateNodeIntent: IntentHandler<'UPDATE_NODE'> = (state, cmd) => {
   return nodeOps.updateNode(state, nodeId, updates)
 }
 
+/** Intent handler for applying partial updates to multiple nodes at once. */
+export const updateNodesIntent: IntentHandler<'UPDATE_NODES'> = (state, cmd) => {
+  const { entries } = cmd.payload
+  if (entries.length === 0) {
+    return state
+  }
+  return nodeOps.updateNodes(state, entries)
+}
+
 /** Intent handler for updating text content on a text node. */
 export const updateTextIntent: IntentHandler<'UPDATE_TEXT'> = (state, cmd) => {
   const node = state.nodes.get(cmd.payload.nodeId)
